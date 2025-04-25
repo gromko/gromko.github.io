@@ -5,26 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ЄPython loading...</title>
 </head>    
-<body>    
+<body> 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
-            //var hash=window.location.hash;
+            var hash=window.location.hash;
             var params = new URLSearchParams(window.location.search);
-            var xstyle = params.get('style');
-            //console.log("hash=",hash);
-            console.log("style=",xstyle);
-            //localStorage.setItem('epythonHash', JSON.stringify({ key: hash }));
-            //localStorage.setItem('epythonParam', JSON.stringify({ key: xstyle }));
+            let style = params.get('style');
+            console.log("Hash=",hash);
+            console.log("Style=",style);
+            
+            localStorage.setItem('epythonHash', JSON.stringify({ key: hash }));
+            localStorage.setItem('epythonParam', JSON.stringify({ key: style }));
+            
             
             const lang = navigator.language || navigator.userLanguage;
-            var target = 'index_en.html';
+            let target = 'index_en.html';
             if (lang.startsWith('uk') || lang.startsWith('ru')) {
                target = 'index_uk.html';
-            } 
-              console.log("target=",target);          
-            // Перенаправляємо на нову сторінку
-            window.location.href =  target;
+            }            
+            // Отримуємо базовий шлях (pathname)
+            const basePath = window.location.pathname;
+            console.log("basePath=",basePath);
+            window.location.href = basePath.replace(/[^/]*$/, '') + target;
+           
         });
     </script>
 </body>
