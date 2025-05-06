@@ -92,8 +92,8 @@
     
         if (window.location.search !== '') {
             const params = new URL(window.location).searchParams;
-            viewEmbed = params.get("view") === "embed";
-            loadFromURL = params.get("load") || '';
+            var viewEmbed = params.get("view") === "embed";
+            var loadFromURL = params.get("load") || '';
     
             const codeParam = params.get("code");
             if (codeParam) {
@@ -114,42 +114,52 @@
             $('#file_tabs').show();
         }
     
-        let files = {};
+        let py_file = '';
     
         if (codeFromParam) {
-            files['mycode.py'] = codeFromParam;
-            initEditor(files);
+            py_file = codeFromParam;
+            initEditor(py_file);
         } else if (loadFromURL) {
             const xhr = new XMLHttpRequest();
             xhr.open("GET", loadFromURL, true);
-            xhr.responseType = "text";
-    
+            xhr.responseType = "text";    
             xhr.onload = function () {
                 if (xhr.status >= 200 && xhr.status < 300) {
-                    files["mycode.py"] = xhr.responseText;
+                    py_file = xhr.responseText;                    
                 } else {
-                    files["mycode.py"] = "# Помилка завантаження: HTTP ${xhr.status}";
+                    files = "# Error loading file: HTTP ${xhr.status}";
                 }
-            initEditor(files);
-            };
-    
+            initEditor(py_file);
+            };    
         xhr.onerror = function () {
-            files["mycode.py"] = `# Помилка запиту`;
-            initEditor(files);
-        };
-    
+            files = "# Error request file";
+            initEditor(py_file);
+        };    
       xhr.send();
     } else {
-            files['mycode.py'] = '';
-            initEditor(files);
+            py_file = '';
+            initEditor(py_file);
         }
-    
-        function initEditor(filesObj) {
-            PythonIDE.files = filesObj;
+             
+            
+       function initEditor(files) {
+        try {
+            PythonIDE.files = JSON.parse(files);
+            } catch (e) {
+                PythonIDE.files['mycode.py'] = files;
+                if (loadFromURL) { 
+                    try {         
+                        PythonIDE.editor.setValue(files);
+                        PythonIDE.editor.refresh();
+                    } catch (e) {}   
+                }   
+            }            
             PythonIDE.currentFile = 'mycode.py';
-            PythonIDE.projectName = 'mycode';
-            PythonIDE.updateFileTabs();
-        }
+            PythonIDE.projectName = 'mycode.py'.replace(".py", "");
+            PythonIDE.updateFileTabs();  
+        }          
+
+   
     </script>
     
     
