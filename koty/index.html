@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070a14">
+  <meta name="description" content="Котигорошко — весела онлайн-головоломка з лабіринтами. Проведи смайлик крізь лабіринт і збери всі кристали.">
+  <title>Котигорошко — лабіринт-головоломка</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='28%25' r='80%25'%3E%3Cstop offset='0' stop-color='%23fffbe0'/%3E%3Cstop offset='.45' stop-color='%23ffc45c'/%3E%3Cstop offset='1' stop-color='%23b64a05'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%230d1326'/%3E%3Ccircle cx='32' cy='32' r='17' fill='url(%23g)'/%3E%3Ccircle cx='26' cy='29' r='2.6' fill='%234a2103'/%3E%3Ccircle cx='38' cy='29' r='2.6' fill='%234a2103'/%3E%3Cpath d='M25 37q7 6 14 0' fill='none' stroke='%234a2103' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true" focusable="false" width="0" height="0">
+    <defs>
+      <radialGradient id="smileyBody" cx="34%" cy="26%" r="82%">
+        <stop offset="0" stop-color="#fffbe0"/>
+        <stop offset=".22" stop-color="#ffe08a"/>
+        <stop offset=".5" stop-color="#ffb648"/>
+        <stop offset=".78" stop-color="#f08a1e"/>
+        <stop offset="1" stop-color="#b64a05"/>
+      </radialGradient>
+      <radialGradient id="smileyRim" cx="50%" cy="50%" r="50%">
+        <stop offset=".7" stop-color="#3d1500" stop-opacity="0"/>
+        <stop offset=".9" stop-color="#3d1500" stop-opacity=".18"/>
+        <stop offset="1" stop-color="#3d1500" stop-opacity=".6"/>
+      </radialGradient>
+      <radialGradient id="smileySpec" cx="50%" cy="50%" r="50%">
+        <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="smileyEye" cx="42%" cy="30%" r="78%">
+        <stop offset="0" stop-color="#ffffff"/>
+        <stop offset=".68" stop-color="#fff7e6"/>
+        <stop offset="1" stop-color="#efc48c"/>
+      </radialGradient>
+      <linearGradient id="smileyMouth" x1="50" y1="58" x2="50" y2="78" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#541c00"/>
+        <stop offset="1" stop-color="#8a3600"/>
+      </linearGradient>
+      <clipPath id="smileyMouthClip">
+        <path d="M30 60.5Q50 81 70 60.5Q50 69.5 30 60.5Z"/>
+      </clipPath>
+    </defs>
+    <symbol id="smiley" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="45" fill="url(#smileyBody)"/>
+      <circle cx="50" cy="50" r="45" fill="url(#smileyRim)"/>
+      <ellipse cx="33" cy="27" rx="17" ry="11.5" transform="rotate(-28 33 27)" fill="url(#smileySpec)"/>
+      <g class="smiley-eyes">
+        <ellipse cx="35.5" cy="44.5" rx="8.7" ry="10.4" fill="url(#smileyEye)"/>
+        <ellipse cx="64.5" cy="44.5" rx="8.7" ry="10.4" fill="url(#smileyEye)"/>
+        <circle cx="37" cy="46.5" r="5.3" fill="#4a2103"/>
+        <circle cx="63" cy="46.5" r="5.3" fill="#4a2103"/>
+        <circle cx="38.7" cy="44" r="1.9" fill="#ffffff"/>
+        <circle cx="64.7" cy="44" r="1.9" fill="#ffffff"/>
+      </g>
+      <ellipse cx="34.5" cy="57.5" rx="6" ry="3.2" fill="#ff8a3d" opacity=".45"/>
+      <ellipse cx="65.5" cy="57.5" rx="6" ry="3.2" fill="#ff8a3d" opacity=".45"/>
+      <path d="M30 60.5Q50 81 70 60.5Q50 69.5 30 60.5Z" fill="url(#smileyMouth)"/>
+      <ellipse cx="50" cy="69.5" rx="7.6" ry="3.8" fill="#ff7b6e" clip-path="url(#smileyMouthClip)"/>
+      <path d="M33.5 62.4Q50 68.4 66.5 62.4" fill="none" stroke="#ffd9a8" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>
+    </symbol>
+  </svg>
+
+  <div class="page-glow" aria-hidden="true"></div>
+
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Котигорошко — на початок">
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="brand-ball" viewBox="0 0 100 100" focusable="false"><use href="#smiley"/></svg>
+        </span>
+        <span class="brand-text">
+          <strong>Котигорошко</strong>
+          <small>лабіринт-головоломка</small>
+        </span>
+      </a>
+
+      <div class="top-actions">
+        <button class="icon-btn" id="soundBtn" type="button" aria-label="Вимкнути звук" title="Звук">
+          <svg class="icon icon-sound-on" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9v6h3.5L13 19V5L7.5 9H4Z" fill="currentColor" stroke="none"/>
+            <path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <svg class="icon icon-sound-off" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9v6h3.5L13 19V5L7.5 9H4Z" fill="currentColor" stroke="none"/>
+            <path d="m16.5 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="fullscreenBtn" type="button" aria-label="На весь екран" title="На весь екран">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 4H4v4M16 4h4v4M20 16v4h-4M4 16v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="ghost-btn" id="helpBtn" type="button">
+          <span class="ghost-btn-icon" aria-hidden="true">?</span>
+          Як грати
+        </button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="stage" aria-label="Ігрове поле">
+        <div class="hud">
+          <div class="hud-level">
+            <span class="eyebrow">Рівень <b id="levelNum">1</b> з <span id="levelTotal">20</span></span>
+            <h1 id="levelName">Перші кроки</h1>
+            <span class="difficulty" id="difficulty">легкий</span>
+          </div>
+
+          <div class="hud-gems" aria-live="polite">
+            <span class="hud-gems-label">Скарби</span>
+            <span class="gem-dots" id="gemDots"></span>
+            <span class="hud-gems-count" id="gemCount">0 / 1</span>
+          </div>
+
+          <div class="hud-stats">
+            <div class="hud-stat">
+              <b id="moves">0</b>
+              <span>ходи</span>
+            </div>
+            <div class="hud-stat">
+              <b id="time">0:00</b>
+              <span>час</span>
+            </div>
+            <div class="hud-actions">
+              <button class="icon-btn" id="undoBtn" type="button" aria-label="Крок назад" title="Крок назад (Z)">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 7 4 12l5 5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M4 12h9a6 6 0 0 1 6 6v1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+                </svg>
+              </button>
+              <button class="icon-btn" id="restartBtn" type="button" aria-label="Почати спочатку" title="Спочатку (R)">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+                  <path d="M20 4v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="board-frame">
+          <div class="board" id="board" role="application" aria-label="Лабіринт. Керуйте Котигорошком стрілками."></div>
+          <div class="win-layer" id="winLayer" hidden>
+            <div class="confetti" id="confetti" aria-hidden="true"></div>
+            <div class="win-card" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+              <button class="win-close" id="winClose" type="button" aria-label="Закрити">×</button>
+              <div class="win-icon" aria-hidden="true">
+                <svg viewBox="0 0 64 64">
+                  <path d="M32 6 50 24 32 58 14 24Z" fill="url(#winGem)" stroke="rgba(255,255,255,.65)" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M14 24h36M32 6 25 24l7 34 7-34L32 6Z" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.2"/>
+                  <defs>
+                    <linearGradient id="winGem" x1="18" y1="12" x2="46" y2="52" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#d7fdff"/>
+                      <stop offset=".45" stop-color="#57e6ff"/>
+                      <stop offset="1" stop-color="#1b8fc4"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <p class="win-kicker" id="winKicker">Рівень пройдено</p>
+              <h2 id="winTitle">Чудова робота!</h2>
+              <div class="win-stats">
+                <div><b id="winMoves">0</b><span>ходів</span></div>
+                <div><b id="winTime">0:00</b><span>час</span></div>
+                <div><b id="winBest">—</b><span>оптимум</span></div>
+              </div>
+              <div class="win-actions">
+                <button class="btn btn-primary" id="nextBtn" type="button">Наступний рівень <span aria-hidden="true">→</span></button>
+                <button class="btn btn-soft" id="againBtn" type="button">Ще раз</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-footer">
+          <div class="pad" aria-label="Кнопки керування">
+            <button class="pad-btn pad-up" type="button" data-dir="0" aria-label="Вгору">↑</button>
+            <button class="pad-btn pad-left" type="button" data-dir="2" aria-label="Вліво">←</button>
+            <button class="pad-btn pad-down" type="button" data-dir="1" aria-label="Вниз">↓</button>
+            <button class="pad-btn pad-right" type="button" data-dir="3" aria-label="Вправо">→</button>
+          </div>
+          <p class="hint">
+            <span class="hint-keys"><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd></span>
+            або <kbd>WASD</kbd> · <kbd>Z</kbd> — крок назад · <kbd>R</kbd> — спочатку
+          </p>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="panel progress-panel">
+          <div class="panel-head">
+            <span>Подорож</span>
+            <b id="doneCount">0 / 20</b>
+          </div>
+          <div class="bar" role="progressbar" aria-label="Загальний прогрес" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0" id="progressBar">
+            <span id="progressFill"></span>
+          </div>
+          <p class="muted" id="progressText">Пройдено 0 з 20 рівнів</p>
+          <div class="level-grid" id="levelGrid"></div>
+          <button class="link-btn" id="resetProgressBtn" type="button">Скинути прогрес</button>
+        </div>
+
+        <div class="panel rules-panel">
+          <h3>Як грати</h3>
+          <ul class="rules-list">
+            <li>
+              <span class="rule-icon rule-icon-ball" aria-hidden="true"></span>
+              <span><b>Котигорошко котиться</b> в обраному напрямку, доки не вдариться об стіну.</span>
+            </li>
+            <li>
+              <span class="rule-icon rule-icon-gem" aria-hidden="true"></span>
+              <span><b>Збери всі кристали</b> — вони зникають, щойно Котигорошко їх торкнеться.</span>
+            </li>
+            <li>
+              <span class="rule-icon rule-icon-undo" aria-hidden="true">↶</span>
+              <span><b>Помилився?</b> Скасуй хід або почни рівень заново.</span>
+            </li>
+          </ul>
+          <div class="rule-tip">
+            <span aria-hidden="true">💡</span>
+            <p>Іноді скарб спершу треба об’їхати, щоб зупинитися в потрібному місці.</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <p>Грайте онлайн, без реєстрації. Прогрес зберігається у вашому браузері.</p>
+      <p class="footer-small">Натхненно головоломкою «Guľôčka» · 20 рівнів</p>
+    </footer>
+  </div>
+
+  <div class="modal" id="helpModal" hidden>
+    <div class="modal-backdrop" data-close="1"></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <button class="modal-close" id="helpClose" type="button" aria-label="Закрити">×</button>
+      <p class="win-kicker">Правила</p>
+      <h2 id="helpTitle">Як проходити лабіринт</h2>
+      <div class="help-body">
+        <p>Ваша мета — <b>зібрати всі блакитні кристали</b> на полі. Котигорошко котиться, доки не зупиниться об стіну.</p>
+        <div class="help-demo" aria-hidden="true">
+          <span class="demo-cell demo-wall"></span>
+          <span class="demo-cell demo-path"></span>
+          <span class="demo-cell demo-ball"><svg viewBox="0 0 100 100" focusable="false"><use href="#smiley"/></svg></span>
+          <span class="demo-cell demo-path"></span>
+          <span class="demo-cell demo-gem"></span>
+          <span class="demo-cell demo-wall"></span>
+        </div>
+        <ul class="help-list">
+          <li><b>Керування:</b> стрілки, WASD, свайп по полю або кнопки внизу.</li>
+          <li><b>Скарби:</b> збираються автоматично, коли Котигорошко проїжджає крізь них.</li>
+          <li><b>Крок назад:</b> клавіша <kbd>Z</kbd> або кнопка зі стрілкою.</li>
+          <li><b>Спочатку:</b> клавіша <kbd>R</kbd> або кнопка перезапуску.</li>
+          <li><b>Рівні:</b> обирайте будь-який на мапі рівнів. Нові відкриваються одразу.</li>
+        </ul>
+        <div class="help-note">Порада: плануйте не один хід, а весь маршрут — Котигорошко зупиняється лише біля стін.</div>
+      </div>
+      <button class="btn btn-primary" id="helpOk" type="button">Зрозуміло, граємо!</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="sr-only" id="live" aria-live="polite"></div>
+
+  <noscript>
+    <div class="noscript">Для гри потрібно ввімкнути JavaScript.</div>
+  </noscript>
+
+  <script src="maze.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

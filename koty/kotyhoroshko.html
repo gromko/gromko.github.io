@@ -1,0 +1,2863 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070a14">
+  <meta name="description" content="Котигорошко — весела онлайн-головоломка з лабіринтами. Проведи смайлик крізь лабіринт і збери всі кристали.">
+  <title>Котигорошко — лабіринт-головоломка</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='28%25' r='80%25'%3E%3Cstop offset='0' stop-color='%23fffbe0'/%3E%3Cstop offset='.45' stop-color='%23ffc45c'/%3E%3Cstop offset='1' stop-color='%23b64a05'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%230d1326'/%3E%3Ccircle cx='32' cy='32' r='17' fill='url(%23g)'/%3E%3Ccircle cx='26' cy='29' r='2.6' fill='%234a2103'/%3E%3Ccircle cx='38' cy='29' r='2.6' fill='%234a2103'/%3E%3Cpath d='M25 37q7 6 14 0' fill='none' stroke='%234a2103' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+/* ============================================================
+   Котигорошко — стилі
+   ============================================================ */
+
+:root {
+  --bg: #070a14;
+  --bg-soft: #0b1122;
+  --panel: rgba(19, 27, 50, 0.72);
+  --panel-strong: rgba(24, 33, 60, 0.92);
+  --line: rgba(146, 170, 255, 0.13);
+  --line-strong: rgba(146, 170, 255, 0.22);
+  --text: #ecf1ff;
+  --muted: #94a2c6;
+  --muted-2: #6f7da1;
+  --amber: #ffb648;
+  --amber-2: #ff8a2a;
+  --amber-soft: rgba(255, 182, 72, 0.14);
+  --cyan: #57e6ff;
+  --cyan-2: #24a9d8;
+  --cyan-soft: rgba(87, 230, 255, 0.14);
+  --green: #63e6a8;
+  --red: #ff7a8a;
+  --radius-lg: 26px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+  --shadow-lg: 0 34px 90px -34px rgba(0, 0, 0, 0.92);
+  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --ease-roll: cubic-bezier(0.22, 0.68, 0.24, 1);
+}
+
+* { box-sizing: border-box; }
+
+html { min-height: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100%;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  background:
+    radial-gradient(1100px 720px at 8% -12%, rgba(82, 118, 255, 0.2), transparent 62%),
+    radial-gradient(900px 620px at 102% -4%, rgba(255, 158, 66, 0.13), transparent 58%),
+    radial-gradient(900px 720px at 50% 118%, rgba(55, 216, 255, 0.09), transparent 62%),
+    var(--bg);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+body.no-scroll { overflow: hidden; }
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
+}
+
+.page-glow {
+  position: fixed;
+  z-index: 0;
+  width: 540px;
+  height: 540px;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.page-glow::before,
+.page-glow::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+
+.page-glow::before {
+  width: 380px;
+  height: 380px;
+  left: 4%;
+  top: 14%;
+  background: radial-gradient(circle, rgba(94, 116, 255, 0.32), transparent 68%);
+}
+
+.page-glow::after {
+  width: 320px;
+  height: 320px;
+  right: 6%;
+  top: 46%;
+  background: radial-gradient(circle, rgba(255, 162, 66, 0.22), transparent 68%);
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 24px clamp(16px, 3vw, 36px) 36px;
+}
+
+/* ---------- Шапка ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 16px;
+  outline-offset: 4px;
+}
+
+.brand-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 120% at 20% 0%, rgba(255, 255, 255, 0.12), transparent 55%),
+    linear-gradient(150deg, rgba(255, 182, 72, 0.2), rgba(87, 230, 255, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px -12px rgba(255, 160, 60, 0.55);
+}
+
+.brand-ball {
+  display: block;
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 3px 7px rgba(255, 158, 54, 0.5));
+}
+
+.svg-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+
+.brand-text strong {
+  font-size: 1.16rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  background: linear-gradient(100deg, #ffffff 20%, #cfe0ff 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.brand-text small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.top-actions { display: flex; align-items: center; gap: 9px; }
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  cursor: pointer;
+  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.icon-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--line-strong);
+}
+
+.icon-btn:active { transform: scale(0.94); }
+
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none;
+}
+
+.icon { width: 21px; height: 21px; display: block; }
+
+.icon-sound-off { display: none; }
+.sound-off .icon-sound-on { display: none; }
+.sound-off .icon-sound-off { display: block; }
+
+.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 16px;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.ghost-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--line-strong); }
+
+.ghost-btn-icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--amber);
+  background: var(--amber-soft);
+  border: 1px solid rgba(255, 182, 72, 0.35);
+}
+
+/* ---------- Розкладка ---------- */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: clamp(18px, 2.4vw, 30px);
+  align-items: start;
+}
+
+.stage { min-width: 0; }
+
+/* ---------- HUD ---------- */
+
+.hud {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto 14px;
+  padding: 13px 17px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent),
+    var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 44px -30px rgba(0, 0, 0, 0.9);
+}
+
+.hud-level { display: flex; flex-direction: column; min-width: 140px; flex: 1 1 150px; }
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eyebrow b { color: var(--amber); }
+
+.hud-level h1 {
+  margin: 2px 0 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.difficulty {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 1px 8px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.hud-gems {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 12px;
+  background: rgba(87, 230, 255, 0.06);
+  border: 1px solid rgba(87, 230, 255, 0.16);
+  border-radius: 12px;
+}
+
+.hud-gems-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.gem-dots { display: inline-flex; align-items: center; gap: 5px; }
+
+.gem-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  transition: background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.gem-dot.filled {
+  background: linear-gradient(135deg, #d7fdff, var(--cyan) 45%, var(--cyan-2));
+  border-color: rgba(215, 253, 255, 0.8);
+  box-shadow: 0 0 10px rgba(87, 230, 255, 0.6);
+}
+
+.hud-gems-count {
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #d9f9ff;
+}
+
+.hud-stats { display: flex; align-items: center; gap: 16px; margin-left: auto; }
+
+.hud-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 42px;
+  line-height: 1.1;
+}
+
+.hud-stat b {
+  font-size: 1.06rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-stat span {
+  margin-top: 2px;
+  color: var(--muted-2);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hud-actions { display: flex; gap: 7px; margin-left: 2px; }
+
+.hud-actions .icon-btn { width: 38px; height: 38px; border-radius: 11px; }
+.hud-actions .icon { width: 19px; height: 19px; }
+
+/* ---------- Поле ---------- */
+
+.board-frame {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: clamp(10px, 1.5vw, 16px);
+  background:
+    radial-gradient(120% 120% at 28% 0%, rgba(90, 130, 255, 0.15), transparent 58%),
+    linear-gradient(180deg, rgba(26, 36, 66, 0.94), rgba(11, 17, 33, 0.98));
+  border: 1px solid rgba(130, 160, 255, 0.17);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.board-frame::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 182, 72, 0.18), transparent 30%, transparent 70%, rgba(87, 230, 255, 0.14));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1px;
+  opacity: 0.75;
+}
+
+.board {
+  --cols: 7;
+  --rows: 7;
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--cols) / var(--rows);
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-template-rows: repeat(var(--rows), 1fr);
+  border-radius: 17px;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(255, 255, 255, 0.035), transparent 60%),
+    #0a1020;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cell { position: relative; padding: 2px; }
+
+.tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.026);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.018);
+}
+
+.cell.collecting { z-index: 8; }
+
+.board.enter { animation: boardIn 0.38s ease both; }
+
+@keyframes boardIn {
+  from { opacity: 0.35; transform: scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+.cell.wall .tile {
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.12), transparent 38%),
+    linear-gradient(155deg, #46578c 0%, #33406d 52%, #283359 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.28),
+    0 3px 7px rgba(0, 0, 0, 0.34);
+  border-radius: 6px;
+}
+
+.cell.trail .tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 190, 92, 0.55), rgba(255, 150, 40, 0.08) 70%, transparent);
+  animation: trailFade 1.05s ease-out var(--trail-delay, 0ms) forwards;
+}
+
+@keyframes trailFade {
+  0% { opacity: 0.85; transform: scale(0.8); }
+  35% { opacity: 0.55; }
+  100% { opacity: 0; transform: scale(1.05); }
+}
+
+/* ---------- Котигорошко (кулька-смайлик) ---------- */
+
+.ball {
+  position: absolute;
+  left: calc(var(--c) * 100% / var(--cols));
+  top: calc(var(--r) * 100% / var(--rows));
+  width: calc(100% / var(--cols));
+  height: calc(100% / var(--rows));
+  z-index: 6;
+  pointer-events: none;
+  transition:
+    left var(--roll, 0ms) var(--ease-roll),
+    top var(--roll, 0ms) var(--ease-roll);
+  will-change: left, top;
+}
+
+.ball-svg {
+  position: absolute;
+  inset: 4%;
+  width: 92%;
+  height: 92%;
+  display: block;
+  filter:
+    drop-shadow(0 0 14px rgba(255, 158, 54, 0.5))
+    drop-shadow(0 5px 6px rgba(0, 0, 0, 0.55));
+}
+
+.ball .smiley-eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: smileyBlink 6.4s infinite;
+}
+
+@keyframes smileyBlink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  93% { transform: scaleY(0.12); }
+  96% { transform: scaleY(1); }
+}
+
+.ball.bump-up { animation: bumpUp 0.24s ease; }
+.ball.bump-down { animation: bumpDown 0.24s ease; }
+.ball.bump-left { animation: bumpLeft 0.24s ease; }
+.ball.bump-right { animation: bumpRight 0.24s ease; }
+
+@keyframes bumpUp { 45% { transform: translateY(-7%); } }
+@keyframes bumpDown { 45% { transform: translateY(7%); } }
+@keyframes bumpLeft { 45% { transform: translateX(-7%); } }
+@keyframes bumpRight { 45% { transform: translateX(7%); } }
+
+/* ---------- Кристали ---------- */
+
+.gem {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46%;
+  height: 46%;
+  margin: -23% 0 0 -23%;
+  transform: rotate(45deg);
+  border-radius: 12%;
+  background: linear-gradient(135deg, #d7fdff 0%, #7aeeff 32%, #37c8ef 62%, #137fa8 100%);
+  border: 1px solid rgba(224, 253, 255, 0.85);
+  box-shadow:
+    0 0 16px rgba(87, 230, 255, 0.7),
+    0 0 34px rgba(50, 180, 230, 0.28),
+    inset 0 0 8px rgba(255, 255, 255, 0.85);
+  animation: gemPulse 2.4s ease-in-out infinite;
+}
+
+.gem::after {
+  content: "";
+  position: absolute;
+  inset: 18%;
+  border-radius: 10%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), transparent 55%);
+}
+
+@keyframes gemPulse {
+  0%, 100% { transform: rotate(45deg) scale(1); filter: brightness(1); }
+  50% { transform: rotate(45deg) scale(1.09); filter: brightness(1.18); }
+}
+
+.gem.collected {
+  animation: gemCollect 0.42s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes gemCollect {
+  0% { transform: rotate(45deg) scale(1); opacity: 1; filter: brightness(1); }
+  45% { transform: rotate(45deg) scale(1.55); opacity: 1; filter: brightness(1.8); }
+  100% { transform: rotate(45deg) translateY(-40%) scale(0.1); opacity: 0; filter: brightness(2); }
+}
+
+/* ---------- Низ сцени ---------- */
+
+.stage-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 620px;
+  margin: 18px auto 0;
+  padding: 0 2px;
+}
+
+.pad {
+  display: grid;
+  grid-template-columns: repeat(3, 54px);
+  grid-template-rows: repeat(2, 54px);
+  grid-template-areas:
+    ". up ."
+    "left down right";
+  gap: 8px;
+}
+
+.pad-btn {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1.35rem;
+  font-weight: 700;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.02)),
+    rgba(22, 31, 57, 0.9);
+  border: 1px solid var(--line-strong);
+  border-radius: 15px;
+  box-shadow: 0 5px 0 rgba(5, 9, 20, 0.55), 0 10px 22px -12px rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.1s ease;
+}
+
+.pad-btn:hover { background-color: rgba(42, 56, 95, 0.95); border-color: rgba(146, 170, 255, 0.35); }
+
+.pad-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 rgba(5, 9, 20, 0.55), 0 6px 12px -10px rgba(0, 0, 0, 0.8);
+}
+
+.pad-up { grid-area: up; }
+.pad-left { grid-area: left; }
+.pad-down { grid-area: down; }
+.pad-right { grid-area: right; }
+
+.hint {
+  flex: 1 1 220px;
+  margin: 0;
+  color: var(--muted-2);
+  font-size: 0.78rem;
+  line-height: 1.9;
+  text-align: right;
+}
+
+.hint-keys { display: inline-flex; gap: 3px; margin-right: 3px; vertical-align: middle; }
+
+kbd {
+  display: inline-block;
+  min-width: 20px;
+  padding: 1px 5px;
+  color: #c9d6f7;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+}
+
+/* ---------- Бокова панель ---------- */
+
+.sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+.panel {
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%),
+    var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 24px 60px -40px rgba(0, 0, 0, 0.9);
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.panel-head b {
+  color: var(--amber);
+  font-size: 0.84rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.bar {
+  height: 7px;
+  margin: 13px 0 9px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--amber-2), var(--amber) 55%, #ffe0a0);
+  box-shadow: 0 0 12px rgba(255, 182, 72, 0.5);
+  transition: width 0.5s var(--ease-roll);
+}
+
+.muted { margin: 0 0 15px; color: var(--muted); font-size: 0.78rem; }
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.level-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 0;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 11px;
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.level-btn:hover {
+  transform: translateY(-2px);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--line-strong);
+}
+
+.level-btn.solved { color: #dff7ff; border-color: rgba(87, 230, 255, 0.24); background: rgba(87, 230, 255, 0.07); }
+
+.level-btn.solved::after {
+  content: "✓";
+  position: absolute;
+  top: 1px;
+  right: 4px;
+  color: var(--cyan);
+  font-size: 0.6rem;
+  font-weight: 900;
+}
+
+.level-btn.current {
+  color: #fff3dc;
+  background: linear-gradient(160deg, rgba(255, 182, 72, 0.25), rgba(255, 138, 42, 0.1));
+  border-color: rgba(255, 182, 72, 0.7);
+  box-shadow: 0 0 0 3px rgba(255, 182, 72, 0.12), 0 8px 18px -12px rgba(255, 160, 60, 0.9);
+}
+
+.level-btn.current::before {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  width: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--amber);
+}
+
+.link-btn {
+  display: block;
+  margin: 14px auto 0;
+  padding: 2px 6px;
+  color: var(--muted-2);
+  font: inherit;
+  font-size: 0.72rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+
+.link-btn:hover { color: var(--red); }
+.link-btn.armed { color: var(--red); font-weight: 700; }
+
+.rules-panel h3 {
+  margin: 0 0 14px;
+  font-size: 0.98rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rules-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.rules-list b { color: #d7e2ff; font-weight: 700; }
+
+.rule-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-top: 1px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line);
+}
+
+.rule-icon-ball::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 33% 28%, #fff6cf, #ffc45c 40%, #e2670d);
+  box-shadow: 0 0 8px rgba(255, 158, 54, 0.6);
+}
+
+.rule-icon-gem::after {
+  content: "";
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #d7fdff, var(--cyan) 50%, var(--cyan-2));
+  box-shadow: 0 0 8px rgba(87, 230, 255, 0.6);
+}
+
+.rule-icon-undo { color: var(--amber); font-size: 1.05rem; font-weight: 700; }
+
+.rule-tip {
+  display: flex;
+  gap: 9px;
+  margin-top: 15px;
+  padding: 10px 11px;
+  background: rgba(255, 182, 72, 0.06);
+  border: 1px solid rgba(255, 182, 72, 0.14);
+  border-radius: 11px;
+}
+
+.rule-tip span { font-size: 0.85rem; line-height: 1.4; }
+
+.rule-tip p {
+  margin: 0;
+  color: #c7b795;
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+/* ---------- Футер ---------- */
+
+.footer {
+  margin-top: 34px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--muted-2);
+  font-size: 0.76rem;
+  text-align: center;
+}
+
+.footer p { margin: 3px 0; }
+.footer-small { opacity: 0.72; }
+
+/* ---------- Вікно перемоги ---------- */
+
+.win-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(55% 55% at 50% 38%, rgba(255, 182, 72, 0.14), transparent 72%),
+    rgba(6, 10, 21, 0.68);
+  backdrop-filter: blur(6px);
+  overflow: hidden;
+}
+
+.win-layer[hidden] { display: none; }
+
+.win-card {
+  position: relative;
+  z-index: 2;
+  width: min(360px, 100%);
+  padding: 24px 24px 22px;
+  text-align: center;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(255, 200, 120, 0.13), transparent 60%),
+    linear-gradient(180deg, rgba(33, 44, 77, 0.98), rgba(13, 19, 37, 0.99));
+  border: 1px solid rgba(255, 200, 120, 0.26);
+  border-radius: 22px;
+  box-shadow: 0 40px 90px -20px #000, 0 0 70px -14px rgba(255, 170, 60, 0.3);
+  animation: cardPop 0.4s cubic-bezier(0.18, 1.25, 0.4, 1);
+}
+
+@keyframes cardPop {
+  0% { opacity: 0; transform: translateY(14px) scale(0.92); }
+  100% { opacity: 1; transform: none; }
+}
+
+.win-close,
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0 0 2px;
+  color: var(--muted);
+  font-size: 1.3rem;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: color 0.18s ease, background 0.18s ease;
+}
+
+.win-close:hover,
+.modal-close:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+
+.win-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 10px;
+  filter: drop-shadow(0 10px 22px rgba(60, 200, 255, 0.45));
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-6px) rotate(2deg); }
+}
+
+.win-icon svg { width: 100%; height: 100%; display: block; }
+
+.win-kicker {
+  margin: 0;
+  color: var(--amber);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.win-card h2 {
+  margin: 5px 0 17px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.win-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.win-stats div {
+  padding: 9px 4px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 11px;
+}
+
+.win-stats b {
+  display: block;
+  font-size: 1.06rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.win-stats span {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted-2);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.win-actions { display: flex; flex-direction: column; gap: 8px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.14s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  color: #2a1602;
+  background: linear-gradient(180deg, #ffd27a, var(--amber) 45%, #f29a2e);
+  border-color: rgba(255, 226, 170, 0.7);
+  box-shadow: 0 10px 24px -10px rgba(255, 158, 54, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.btn-primary:hover { filter: brightness(1.05); }
+
+.btn-soft {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.055);
+  border-color: var(--line);
+}
+
+.btn-soft:hover { background: rgba(255, 255, 255, 0.09); border-color: var(--line-strong); }
+
+/* Конфеті */
+.confetti { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+
+.confetti i {
+  position: absolute;
+  top: -14px;
+  width: 7px;
+  height: 11px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: confettiFall var(--dur, 2.2s) linear var(--delay, 0s) forwards;
+}
+
+@keyframes confettiFall {
+  0% { opacity: 1; transform: translate3d(0, -10px, 0) rotate(0deg); }
+  100% { opacity: 0; transform: translate3d(var(--drift, 0), 620px, 0) rotate(var(--spin, 540deg)); }
+}
+
+/* ---------- Модальне вікно ---------- */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.modal[hidden] { display: none; }
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 7, 15, 0.72);
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(520px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 26px;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(90, 130, 255, 0.12), transparent 60%),
+    linear-gradient(180deg, rgba(27, 37, 67, 0.99), rgba(12, 18, 35, 0.99));
+  border: 1px solid var(--line-strong);
+  border-radius: 22px;
+  box-shadow: 0 40px 100px -24px #000;
+  animation: cardPop 0.3s cubic-bezier(0.18, 1.2, 0.4, 1);
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-card h2 { margin: 5px 0 14px; font-size: 1.4rem; font-weight: 800; }
+
+.help-body p { margin: 0 0 14px; color: var(--muted); font-size: 0.9rem; }
+.help-body b { color: #e2eaff; }
+
+.help-demo {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 16px 0;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.demo-cell {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.demo-wall {
+  background: linear-gradient(155deg, #46578c, #283359);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.demo-path { background: rgba(255, 255, 255, 0.03); }
+
+.demo-ball svg {
+  position: absolute;
+  inset: 3px;
+  width: calc(100% - 6px);
+  height: calc(100% - 6px);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+}
+
+.demo-gem::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #d7fdff, var(--cyan) 45%, var(--cyan-2));
+  box-shadow: 0 0 12px rgba(87, 230, 255, 0.65);
+}
+
+.help-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.help-list li { position: relative; padding-left: 18px; }
+.help-list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.58em;
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  background: var(--amber);
+  opacity: 0.8;
+}
+
+.help-note {
+  padding: 11px 13px;
+  color: #cbb98f;
+  font-size: 0.82rem;
+  background: rgba(255, 182, 72, 0.07);
+  border: 1px solid rgba(255, 182, 72, 0.18);
+  border-radius: 11px;
+}
+
+.modal-card .btn { width: 100%; margin-top: 18px; }
+
+/* ---------- Тост ---------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  z-index: 80;
+  padding: 10px 18px;
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 600;
+  background: rgba(24, 34, 62, 0.96);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  box-shadow: 0 20px 50px -20px #000;
+  transform: translate(-50%, 14px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.noscript {
+  position: fixed;
+  inset: auto 20px 20px;
+  padding: 14px;
+  color: #fff;
+  text-align: center;
+  background: #7a1f2c;
+  border-radius: 10px;
+  z-index: 100;
+}
+
+/* ---------- Адаптивність ---------- */
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
+  .rules-panel { height: 100%; }
+  .board-frame, .hud, .stage-footer { max-width: 600px; }
+}
+
+@media (max-width: 700px) {
+  .app { padding-top: 16px; }
+  .topbar { margin-bottom: 18px; }
+  .brand-mark { width: 42px; height: 42px; border-radius: 14px; }
+  .brand-ball { width: 25px; height: 25px; }
+  .brand-text strong { font-size: 1.04rem; }
+  .brand-text small { font-size: 0.62rem; }
+  .ghost-btn { width: 42px; padding: 0; justify-content: center; font-size: 0; gap: 0; }
+  .ghost-btn-icon { font-size: 0.74rem; }
+  .hud { gap: 12px; padding: 12px 14px; }
+  .hud-level { flex: 1 1 100%; }
+  .hud-level h1 { font-size: 1.15rem; }
+  .hud-stats { margin-left: 0; width: 100%; justify-content: space-between; }
+  .hud-gems { order: 3; }
+  .hud-actions { margin-left: auto; }
+  .hud-stat { align-items: flex-start; }
+  .stage-footer { justify-content: center; }
+  .hint { text-align: center; flex-basis: 100%; order: -1; line-height: 2.1; }
+  .pad { grid-template-columns: repeat(3, 58px); grid-template-rows: repeat(2, 58px); }
+  .pad-btn { width: 58px; height: 58px; }
+  .sidebar { grid-template-columns: 1fr; }
+  .level-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+@media (max-width: 420px) {
+  .top-actions { gap: 6px; }
+  .icon-btn, .ghost-btn { width: 38px; height: 38px; }
+  .hud-gems { padding: 6px 9px; gap: 7px; }
+  .hud-gems-label { display: none; }
+  .pad { grid-template-columns: repeat(3, 52px); grid-template-rows: repeat(2, 52px); gap: 7px; }
+  .pad-btn { width: 52px; height: 52px; border-radius: 13px; }
+  .level-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- Фокус ---------- */
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+button:focus:not(:focus-visible) { outline: none; }
+
+  </style>
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true" focusable="false" width="0" height="0">
+    <defs>
+      <radialGradient id="smileyBody" cx="34%" cy="26%" r="82%">
+        <stop offset="0" stop-color="#fffbe0"/>
+        <stop offset=".22" stop-color="#ffe08a"/>
+        <stop offset=".5" stop-color="#ffb648"/>
+        <stop offset=".78" stop-color="#f08a1e"/>
+        <stop offset="1" stop-color="#b64a05"/>
+      </radialGradient>
+      <radialGradient id="smileyRim" cx="50%" cy="50%" r="50%">
+        <stop offset=".7" stop-color="#3d1500" stop-opacity="0"/>
+        <stop offset=".9" stop-color="#3d1500" stop-opacity=".18"/>
+        <stop offset="1" stop-color="#3d1500" stop-opacity=".6"/>
+      </radialGradient>
+      <radialGradient id="smileySpec" cx="50%" cy="50%" r="50%">
+        <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="smileyEye" cx="42%" cy="30%" r="78%">
+        <stop offset="0" stop-color="#ffffff"/>
+        <stop offset=".68" stop-color="#fff7e6"/>
+        <stop offset="1" stop-color="#efc48c"/>
+      </radialGradient>
+      <linearGradient id="smileyMouth" x1="50" y1="58" x2="50" y2="78" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#541c00"/>
+        <stop offset="1" stop-color="#8a3600"/>
+      </linearGradient>
+      <clipPath id="smileyMouthClip">
+        <path d="M30 60.5Q50 81 70 60.5Q50 69.5 30 60.5Z"/>
+      </clipPath>
+    </defs>
+    <symbol id="smiley" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="45" fill="url(#smileyBody)"/>
+      <circle cx="50" cy="50" r="45" fill="url(#smileyRim)"/>
+      <ellipse cx="33" cy="27" rx="17" ry="11.5" transform="rotate(-28 33 27)" fill="url(#smileySpec)"/>
+      <g class="smiley-eyes">
+        <ellipse cx="35.5" cy="44.5" rx="8.7" ry="10.4" fill="url(#smileyEye)"/>
+        <ellipse cx="64.5" cy="44.5" rx="8.7" ry="10.4" fill="url(#smileyEye)"/>
+        <circle cx="37" cy="46.5" r="5.3" fill="#4a2103"/>
+        <circle cx="63" cy="46.5" r="5.3" fill="#4a2103"/>
+        <circle cx="38.7" cy="44" r="1.9" fill="#ffffff"/>
+        <circle cx="64.7" cy="44" r="1.9" fill="#ffffff"/>
+      </g>
+      <ellipse cx="34.5" cy="57.5" rx="6" ry="3.2" fill="#ff8a3d" opacity=".45"/>
+      <ellipse cx="65.5" cy="57.5" rx="6" ry="3.2" fill="#ff8a3d" opacity=".45"/>
+      <path d="M30 60.5Q50 81 70 60.5Q50 69.5 30 60.5Z" fill="url(#smileyMouth)"/>
+      <ellipse cx="50" cy="69.5" rx="7.6" ry="3.8" fill="#ff7b6e" clip-path="url(#smileyMouthClip)"/>
+      <path d="M33.5 62.4Q50 68.4 66.5 62.4" fill="none" stroke="#ffd9a8" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>
+    </symbol>
+  </svg>
+
+  <div class="page-glow" aria-hidden="true"></div>
+
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Котигорошко — на початок">
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="brand-ball" viewBox="0 0 100 100" focusable="false"><use href="#smiley"/></svg>
+        </span>
+        <span class="brand-text">
+          <strong>Котигорошко</strong>
+          <small>лабіринт-головоломка</small>
+        </span>
+      </a>
+
+      <div class="top-actions">
+        <button class="icon-btn" id="soundBtn" type="button" aria-label="Вимкнути звук" title="Звук">
+          <svg class="icon icon-sound-on" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9v6h3.5L13 19V5L7.5 9H4Z" fill="currentColor" stroke="none"/>
+            <path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <svg class="icon icon-sound-off" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9v6h3.5L13 19V5L7.5 9H4Z" fill="currentColor" stroke="none"/>
+            <path d="m16.5 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="fullscreenBtn" type="button" aria-label="На весь екран" title="На весь екран">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 4H4v4M16 4h4v4M20 16v4h-4M4 16v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="ghost-btn" id="helpBtn" type="button">
+          <span class="ghost-btn-icon" aria-hidden="true">?</span>
+          Як грати
+        </button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="stage" aria-label="Ігрове поле">
+        <div class="hud">
+          <div class="hud-level">
+            <span class="eyebrow">Рівень <b id="levelNum">1</b> з <span id="levelTotal">20</span></span>
+            <h1 id="levelName">Перші кроки</h1>
+            <span class="difficulty" id="difficulty">легкий</span>
+          </div>
+
+          <div class="hud-gems" aria-live="polite">
+            <span class="hud-gems-label">Скарби</span>
+            <span class="gem-dots" id="gemDots"></span>
+            <span class="hud-gems-count" id="gemCount">0 / 1</span>
+          </div>
+
+          <div class="hud-stats">
+            <div class="hud-stat">
+              <b id="moves">0</b>
+              <span>ходи</span>
+            </div>
+            <div class="hud-stat">
+              <b id="time">0:00</b>
+              <span>час</span>
+            </div>
+            <div class="hud-actions">
+              <button class="icon-btn" id="undoBtn" type="button" aria-label="Крок назад" title="Крок назад (Z)">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 7 4 12l5 5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M4 12h9a6 6 0 0 1 6 6v1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+                </svg>
+              </button>
+              <button class="icon-btn" id="restartBtn" type="button" aria-label="Почати спочатку" title="Спочатку (R)">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+                  <path d="M20 4v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="board-frame">
+          <div class="board" id="board" role="application" aria-label="Лабіринт. Керуйте Котигорошком стрілками."></div>
+          <div class="win-layer" id="winLayer" hidden>
+            <div class="confetti" id="confetti" aria-hidden="true"></div>
+            <div class="win-card" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+              <button class="win-close" id="winClose" type="button" aria-label="Закрити">×</button>
+              <div class="win-icon" aria-hidden="true">
+                <svg viewBox="0 0 64 64">
+                  <path d="M32 6 50 24 32 58 14 24Z" fill="url(#winGem)" stroke="rgba(255,255,255,.65)" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M14 24h36M32 6 25 24l7 34 7-34L32 6Z" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.2"/>
+                  <defs>
+                    <linearGradient id="winGem" x1="18" y1="12" x2="46" y2="52" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#d7fdff"/>
+                      <stop offset=".45" stop-color="#57e6ff"/>
+                      <stop offset="1" stop-color="#1b8fc4"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <p class="win-kicker" id="winKicker">Рівень пройдено</p>
+              <h2 id="winTitle">Чудова робота!</h2>
+              <div class="win-stats">
+                <div><b id="winMoves">0</b><span>ходів</span></div>
+                <div><b id="winTime">0:00</b><span>час</span></div>
+                <div><b id="winBest">—</b><span>оптимум</span></div>
+              </div>
+              <div class="win-actions">
+                <button class="btn btn-primary" id="nextBtn" type="button">Наступний рівень <span aria-hidden="true">→</span></button>
+                <button class="btn btn-soft" id="againBtn" type="button">Ще раз</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-footer">
+          <div class="pad" aria-label="Кнопки керування">
+            <button class="pad-btn pad-up" type="button" data-dir="0" aria-label="Вгору">↑</button>
+            <button class="pad-btn pad-left" type="button" data-dir="2" aria-label="Вліво">←</button>
+            <button class="pad-btn pad-down" type="button" data-dir="1" aria-label="Вниз">↓</button>
+            <button class="pad-btn pad-right" type="button" data-dir="3" aria-label="Вправо">→</button>
+          </div>
+          <p class="hint">
+            <span class="hint-keys"><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd></span>
+            або <kbd>WASD</kbd> · <kbd>Z</kbd> — крок назад · <kbd>R</kbd> — спочатку
+          </p>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="panel progress-panel">
+          <div class="panel-head">
+            <span>Подорож</span>
+            <b id="doneCount">0 / 20</b>
+          </div>
+          <div class="bar" role="progressbar" aria-label="Загальний прогрес" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0" id="progressBar">
+            <span id="progressFill"></span>
+          </div>
+          <p class="muted" id="progressText">Пройдено 0 з 20 рівнів</p>
+          <div class="level-grid" id="levelGrid"></div>
+          <button class="link-btn" id="resetProgressBtn" type="button">Скинути прогрес</button>
+        </div>
+
+        <div class="panel rules-panel">
+          <h3>Як грати</h3>
+          <ul class="rules-list">
+            <li>
+              <span class="rule-icon rule-icon-ball" aria-hidden="true"></span>
+              <span><b>Котигорошко котиться</b> в обраному напрямку, доки не вдариться об стіну.</span>
+            </li>
+            <li>
+              <span class="rule-icon rule-icon-gem" aria-hidden="true"></span>
+              <span><b>Збери всі кристали</b> — вони зникають, щойно Котигорошко їх торкнеться.</span>
+            </li>
+            <li>
+              <span class="rule-icon rule-icon-undo" aria-hidden="true">↶</span>
+              <span><b>Помилився?</b> Скасуй хід або почни рівень заново.</span>
+            </li>
+          </ul>
+          <div class="rule-tip">
+            <span aria-hidden="true">💡</span>
+            <p>Іноді скарб спершу треба об’їхати, щоб зупинитися в потрібному місці.</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <p>Грайте онлайн, без реєстрації. Прогрес зберігається у вашому браузері.</p>
+      <p class="footer-small">Натхненно головоломкою «Guľôčka» · 20 рівнів</p>
+    </footer>
+  </div>
+
+  <div class="modal" id="helpModal" hidden>
+    <div class="modal-backdrop" data-close="1"></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <button class="modal-close" id="helpClose" type="button" aria-label="Закрити">×</button>
+      <p class="win-kicker">Правила</p>
+      <h2 id="helpTitle">Як проходити лабіринт</h2>
+      <div class="help-body">
+        <p>Ваша мета — <b>зібрати всі блакитні кристали</b> на полі. Котигорошко котиться, доки не зупиниться об стіну.</p>
+        <div class="help-demo" aria-hidden="true">
+          <span class="demo-cell demo-wall"></span>
+          <span class="demo-cell demo-path"></span>
+          <span class="demo-cell demo-ball"><svg viewBox="0 0 100 100" focusable="false"><use href="#smiley"/></svg></span>
+          <span class="demo-cell demo-path"></span>
+          <span class="demo-cell demo-gem"></span>
+          <span class="demo-cell demo-wall"></span>
+        </div>
+        <ul class="help-list">
+          <li><b>Керування:</b> стрілки, WASD, свайп по полю або кнопки внизу.</li>
+          <li><b>Скарби:</b> збираються автоматично, коли Котигорошко проїжджає крізь них.</li>
+          <li><b>Крок назад:</b> клавіша <kbd>Z</kbd> або кнопка зі стрілкою.</li>
+          <li><b>Спочатку:</b> клавіша <kbd>R</kbd> або кнопка перезапуску.</li>
+          <li><b>Рівні:</b> обирайте будь-який на мапі рівнів. Нові відкриваються одразу.</li>
+        </ul>
+        <div class="help-note">Порада: плануйте не один хід, а весь маршрут — Котигорошко зупиняється лише біля стін.</div>
+      </div>
+      <button class="btn btn-primary" id="helpOk" type="button">Зрозуміло, граємо!</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="sr-only" id="live" aria-live="polite"></div>
+
+  <noscript>
+    <div class="noscript">Для гри потрібно ввімкнути JavaScript.</div>
+  </noscript>
+
+  <script>
+/*
+ * Котигорошко — генератор лабіринтів.
+ *
+ * Механіка: кулька-смайлик котиться в обраному напрямку, доки не вдариться
+ * об стіну. Кожен рівень генерується детерміновано (однаковий для всіх),
+ * а розв'язність перевіряється пошуком у ширину по станах
+ * (позиція кульки + набір зібраних скарбів).
+ */
+(function (global) {
+  'use strict';
+
+  var DIRS = [
+    [-1, 0], // 0 — вгору
+    [1, 0],  // 1 — вниз
+    [0, -1], // 2 — вліво
+    [0, 1]   // 3 — вправо
+  ];
+
+  var LEVELS = [
+    { name: 'Перші кроки',      w: 7,  h: 7,  density: 0.15, gems: 1, minMoves: 2 },
+    { name: 'Тихий закуток',    w: 7,  h: 7,  density: 0.19, gems: 1, minMoves: 3 },
+    { name: 'Два скарби',       w: 8,  h: 8,  density: 0.17, gems: 2, minMoves: 4 },
+    { name: 'Кам’яний сад',     w: 8,  h: 8,  density: 0.21, gems: 2, minMoves: 5 },
+    { name: 'Лабіринт вітрів',  w: 9,  h: 9,  density: 0.19, gems: 2, minMoves: 5 },
+    { name: 'Потрійний слід',   w: 9,  h: 9,  density: 0.22, gems: 3, minMoves: 6 },
+    { name: 'Срібні стіни',     w: 10, h: 10, density: 0.20, gems: 3, minMoves: 7 },
+    { name: 'Загублена зала',   w: 10, h: 10, density: 0.24, gems: 3, minMoves: 8 },
+    { name: 'Чотири грані',     w: 11, h: 11, density: 0.21, gems: 4, minMoves: 8 },
+    { name: 'Кришталевий шлях', w: 11, h: 11, density: 0.24, gems: 4, minMoves: 9 },
+    { name: 'Тіньовий хід',     w: 12, h: 12, density: 0.22, gems: 4, minMoves: 10 },
+    { name: 'Останній скарб',   w: 12, h: 12, density: 0.25, gems: 5, minMoves: 12 },
+    { name: 'Брама вітрів',     w: 13, h: 13, density: 0.21, gems: 5, minMoves: 11 },
+    { name: 'Смарагдова зала',  w: 13, h: 13, density: 0.24, gems: 5, minMoves: 12 },
+    { name: 'Мідний лабіринт',  w: 14, h: 14, density: 0.22, gems: 5, minMoves: 12 },
+    { name: 'Золотий ключ',     w: 14, h: 14, density: 0.25, gems: 6, minMoves: 13 },
+    { name: 'Вежа тіней',       w: 15, h: 15, density: 0.23, gems: 6, minMoves: 13 },
+    { name: 'Підземний хід',    w: 15, h: 15, density: 0.26, gems: 6, minMoves: 14 },
+    { name: 'Кришталева брама', w: 16, h: 16, density: 0.24, gems: 6, minMoves: 14 },
+    { name: 'Остання подорож',  w: 16, h: 16, density: 0.27, gems: 7, minMoves: 16 }
+  ];
+
+  /* Детермінований генератор псевдовипадкових чисел. */
+  function mulberry32(a) {
+    return function () {
+      a |= 0;
+      a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function pick(arr, rng) {
+    return arr[Math.floor(rng() * arr.length)];
+  }
+
+  function shuffle(arr, rng) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(rng() * (i + 1));
+      var t = arr[i];
+      arr[i] = arr[j];
+      arr[j] = t;
+    }
+    return arr;
+  }
+
+  /* Створює сітку: 1 — стіна, 0 — підлога. */
+  function makeGrid(w, h, density, rng) {
+    var g = [];
+    var r, c;
+    for (r = 0; r < h; r++) g.push(new Array(w).fill(0));
+    for (c = 0; c < w; c++) { g[0][c] = 1; g[h - 1][c] = 1; }
+    for (r = 0; r < h; r++) { g[r][0] = 1; g[r][w - 1] = 1; }
+
+    var target = Math.round((w - 2) * (h - 2) * density);
+    var placed = 0;
+    var guard = 0;
+    while (placed < target && guard++ < 600) {
+      var horizontal = rng() < 0.5;
+      var len = 1 + Math.floor(rng() * 4);
+      var rr = 1 + Math.floor(rng() * (h - 2));
+      var cc = 1 + Math.floor(rng() * (w - 2));
+      for (var i = 0; i < len; i++) {
+        var y = horizontal ? rr : rr + i;
+        var x = horizontal ? cc + i : cc;
+        if (y < 1 || y > h - 2 || x < 1 || x > w - 2) break;
+        if (g[y][x] === 0) {
+          g[y][x] = 1;
+          placed++;
+        }
+      }
+    }
+    return g;
+  }
+
+  /* Для кожної вільної клітинки — усі можливі «прокати» кульки. */
+  function buildMoves(grid, w, h) {
+    var moves = new Array(w * h);
+    for (var r = 0; r < h; r++) {
+      for (var c = 0; c < w; c++) {
+        var idx = r * w + c;
+        moves[idx] = [];
+        if (grid[r][c]) continue;
+        for (var d = 0; d < 4; d++) {
+          var dr = DIRS[d][0];
+          var dc = DIRS[d][1];
+          var cr = r;
+          var cc = c;
+          var path = [idx];
+          while (true) {
+            var nr = cr + dr;
+            var nc = cc + dc;
+            if (grid[nr][nc]) break;
+            cr = nr;
+            cc = nc;
+            path.push(cr * w + cc);
+          }
+          if (cr !== r || cc !== c) {
+            moves[idx].push({ to: cr * w + cc, path: path, dir: d });
+          }
+        }
+      }
+    }
+    return moves;
+  }
+
+  /* Куди Котигорошко взагалі може докотитися (без урахування скарбів). */
+  function explore(moves, startIdx) {
+    var seen = new Set([startIdx]);
+    var visitable = new Set([startIdx]);
+    var queue = [startIdx];
+    var head = 0;
+    while (head < queue.length) {
+      var cur = queue[head++];
+      var list = moves[cur];
+      for (var i = 0; i < list.length; i++) {
+        var m = list[i];
+        for (var j = 0; j < m.path.length; j++) visitable.add(m.path[j]);
+        if (!seen.has(m.to)) {
+          seen.add(m.to);
+          queue.push(m.to);
+        }
+      }
+    }
+    return { stops: seen, visitable: visitable };
+  }
+
+  /* Пошук найкоротшого розв'язку: стан = клітинка + маска скарбів. */
+  function solve(moves, w, h, startIdx, gems) {
+    var n = gems.length;
+    var full = (1 << n) - 1;
+    var cellBit = new Int32Array(w * h);
+    for (var i = 0; i < n; i++) cellBit[gems[i]] |= (1 << i);
+
+    var stride = 1 << n;
+    var total = w * h * stride;
+    var dist = new Int32Array(total);
+    dist.fill(-1);
+    var queue = new Int32Array(total);
+    var head = 0;
+    var tail = 0;
+
+    var startMask = cellBit[startIdx] || 0;
+    var startState = startIdx * stride + startMask;
+    dist[startState] = 0;
+    queue[tail++] = startState;
+
+    while (head < tail) {
+      var st = queue[head++];
+      var mask = st & (stride - 1);
+      var cell = (st - mask) / stride;
+      if (mask === full) return { moves: dist[st] };
+
+      var d = dist[st];
+      var list = moves[cell];
+      for (var k = 0; k < list.length; k++) {
+        var m = list[k];
+        var nm = mask;
+        for (var j = 0; j < m.path.length; j++) nm |= cellBit[m.path[j]];
+        var ns = m.to * stride + nm;
+        if (dist[ns] === -1) {
+          dist[ns] = d + 1;
+          queue[tail++] = ns;
+        }
+      }
+    }
+    return null;
+  }
+
+  function chebyshev(a, b, w) {
+    var ar = Math.floor(a / w), ac = a % w;
+    var br = Math.floor(b / w), bc = b % w;
+    return Math.max(Math.abs(ar - br), Math.abs(ac - bc));
+  }
+
+  var cache = {};
+
+  function generateLevel(index) {
+    if (cache[index]) return cache[index];
+
+    var cfg = LEVELS[index];
+    var rng = mulberry32((0x9e3779b1 ^ (index * 0x85ebca6b)) >>> 0);
+    var fallback = null;
+    var attempts = 340;
+
+    for (var attempt = 0; attempt < attempts; attempt++) {
+      var relax = attempt > 220 ? 3 : attempt > 140 ? 2 : attempt > 60 ? 1 : 0;
+      var minMoves = Math.max(1, cfg.minMoves - relax);
+
+      var w = cfg.w;
+      var h = cfg.h;
+      var grid = makeGrid(w, h, cfg.density, rng);
+      var moves = buildMoves(grid, w, h);
+
+      var free = [];
+      for (var i = 0; i < w * h; i++) {
+        if (!grid[Math.floor(i / w)][i % w]) free.push(i);
+      }
+      if (free.length < 12) continue;
+
+      var starts = free.filter(function (idx) { return moves[idx].length >= 3; });
+      if (!starts.length) {
+        starts = free.filter(function (idx) { return moves[idx].length >= 2; });
+      }
+      if (!starts.length) continue;
+
+      var startIdx = pick(starts, rng);
+      var info = explore(moves, startIdx);
+      if (info.stops.size < 5) continue;
+
+      var candidates = [];
+      info.visitable.forEach(function (idx) {
+        if (idx !== startIdx) candidates.push(idx);
+      });
+      if (candidates.length < cfg.gems) continue;
+      shuffle(candidates, rng);
+
+      var gems = [];
+      for (var c2 = 0; c2 < candidates.length && gems.length < cfg.gems; c2++) {
+        var cand = candidates[c2];
+        var ok = true;
+        for (var g2 = 0; g2 < gems.length; g2++) {
+          if (chebyshev(cand, gems[g2], w) < 2) { ok = false; break; }
+        }
+        if (ok) gems.push(cand);
+      }
+      if (gems.length < cfg.gems) continue;
+
+      var sol = solve(moves, w, h, startIdx, gems);
+      if (!sol) continue;
+
+      var level = {
+        index: index,
+        name: cfg.name,
+        w: w,
+        h: h,
+        grid: grid,
+        moves: moves,
+        start: startIdx,
+        gems: gems,
+        solution: sol.moves
+      };
+
+      if (!fallback || sol.moves > fallback.solution) fallback = level;
+      if (sol.moves >= minMoves) {
+        cache[index] = level;
+        return level;
+      }
+    }
+
+    if (fallback) {
+      cache[index] = fallback;
+      return fallback;
+    }
+
+    /* Практично недосяжний запасний варіант. */
+    return makeFallback(index);
+  }
+
+  function makeFallback(index) {
+    var w = 7, h = 7;
+    var grid = [];
+    for (var r = 0; r < h; r++) {
+      var row = [];
+      for (var c = 0; c < w; c++) {
+        row.push((r === 0 || c === 0 || r === h - 1 || c === w - 1) ? 1 : 0);
+      }
+      grid.push(row);
+    }
+    grid[2][2] = 1;
+    grid[2][4] = 1;
+    grid[4][2] = 1;
+    grid[4][4] = 1;
+    var moves = buildMoves(grid, w, h);
+    var start = 3 * w + 3;
+    var gems = [1 * w + 3, 3 * w + 1, 5 * w + 3, 3 * w + 5];
+    var level = {
+      index: index,
+      name: LEVELS[index].name,
+      w: w,
+      h: h,
+      grid: grid,
+      moves: moves,
+      start: start,
+      gems: gems.slice(0, Math.min(4, LEVELS[index].gems)),
+      solution: 4
+    };
+    cache[index] = level;
+    return level;
+  }
+
+  global.Maze = {
+    LEVELS: LEVELS,
+    DIRS: DIRS,
+    generateLevel: generateLevel
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+  </script>
+  <script>
+/*
+ * Котигорошко — логіка гри.
+ */
+(function () {
+  'use strict';
+
+  var Maze = window.Maze;
+  var LEVELS = Maze.LEVELS;
+  var TOTAL = LEVELS.length;
+  var STORAGE_KEY = 'kotyhoroshko-v1';
+  var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- DOM ---------- */
+  var boardEl = document.getElementById('board');
+  var levelNumEl = document.getElementById('levelNum');
+  var levelTotalEl = document.getElementById('levelTotal');
+  var levelNameEl = document.getElementById('levelName');
+  var difficultyEl = document.getElementById('difficulty');
+  var gemDotsEl = document.getElementById('gemDots');
+  var gemCountEl = document.getElementById('gemCount');
+  var movesEl = document.getElementById('moves');
+  var timeEl = document.getElementById('time');
+  var undoBtn = document.getElementById('undoBtn');
+  var restartBtn = document.getElementById('restartBtn');
+  var soundBtn = document.getElementById('soundBtn');
+  var fullscreenBtn = document.getElementById('fullscreenBtn');
+  var helpBtn = document.getElementById('helpBtn');
+  var helpModal = document.getElementById('helpModal');
+  var helpClose = document.getElementById('helpClose');
+  var helpOk = document.getElementById('helpOk');
+  var levelGrid = document.getElementById('levelGrid');
+  var doneCountEl = document.getElementById('doneCount');
+  var progressFill = document.getElementById('progressFill');
+  var progressBar = document.getElementById('progressBar');
+  var progressText = document.getElementById('progressText');
+  var resetProgressBtn = document.getElementById('resetProgressBtn');
+  var winLayer = document.getElementById('winLayer');
+  var winKicker = document.getElementById('winKicker');
+  var winTitle = document.getElementById('winTitle');
+  var winMoves = document.getElementById('winMoves');
+  var winTime = document.getElementById('winTime');
+  var winBest = document.getElementById('winBest');
+  var nextBtn = document.getElementById('nextBtn');
+  var againBtn = document.getElementById('againBtn');
+  var winClose = document.getElementById('winClose');
+  var confettiEl = document.getElementById('confetti');
+  var toastEl = document.getElementById('toast');
+  var liveEl = document.getElementById('live');
+
+  /* ---------- Стан ---------- */
+  var level = null;
+  var levelIndex = 0;
+  var pos = 0;
+  var mask = 0;
+  var moveCount = 0;
+  var history = [];
+  var animating = false;
+  var won = false;
+  var elapsed = 0;
+  var timerId = null;
+  var timerStartedAt = 0;
+  var cellEls = [];
+  var gemEls = [];
+  var gemIndexByCell = new Map();
+  var ballEl = null;
+  var pendingTimers = [];
+  var toastTimer = null;
+  var swipeStart = null;
+  var resetArmed = false;
+  var resetArmTimer = null;
+  var levelButtons = [];
+  var soundOn = true;
+  var audioCtx = null;
+
+  var progress = loadProgress();
+  soundOn = progress.sound;
+
+  /* ============================================================
+     Збереження прогресу
+     ============================================================ */
+
+  function defaultProgress() {
+    return { solved: [], best: {}, last: 0, sound: true };
+  }
+
+  function loadProgress() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return defaultProgress();
+      var data = JSON.parse(raw);
+      var solved = Array.isArray(data.solved)
+        ? data.solved.filter(function (n) { return Number.isInteger(n) && n >= 0 && n < TOTAL; })
+        : [];
+      return {
+        solved: solved,
+        best: data.best && typeof data.best === 'object' ? data.best : {},
+        last: Number.isInteger(data.last) && data.last >= 0 && data.last < TOTAL ? data.last : 0,
+        sound: data.sound !== false
+      };
+    } catch (err) {
+      return defaultProgress();
+    }
+  }
+
+  function saveProgress() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    } catch (err) {
+      /* приватний режим або переповнене сховище — просто ігноруємо */
+    }
+  }
+
+  /* ============================================================
+     Звук
+     ============================================================ */
+
+  function getAudio() {
+    if (!soundOn) return null;
+    try {
+      if (!audioCtx) {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return null;
+        audioCtx = new Ctx();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function tone(freq, duration, options) {
+    options = options || {};
+    var ac = getAudio();
+    if (!ac) return;
+    try {
+      var start = ac.currentTime + (options.when || 0);
+      var osc = ac.createOscillator();
+      var gain = ac.createGain();
+      osc.type = options.type || 'sine';
+      osc.frequency.setValueAtTime(freq, start);
+      if (options.to) {
+        osc.frequency.exponentialRampToValueAtTime(Math.max(20, options.to), start + duration);
+      }
+      var peak = options.gain || 0.045;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(peak, start + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      osc.connect(gain);
+      gain.connect(ac.destination);
+      osc.start(start);
+      osc.stop(start + duration + 0.03);
+    } catch (err) {
+      /* звук не критичний */
+    }
+  }
+
+  function playRoll(distance) {
+    var d = Math.min(distance || 1, 10);
+    tone(180 + d * 11, 0.075, { type: 'triangle', gain: 0.026, to: 128 });
+  }
+
+  function playGem() {
+    tone(880, 0.12, { gain: 0.045 });
+    tone(1320, 0.17, { gain: 0.035, when: 0.065 });
+  }
+
+  function playWin() {
+    var notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach(function (n, i) {
+      tone(n, 0.28, { gain: 0.05, when: i * 0.105, type: 'sine' });
+    });
+    tone(1568, 0.5, { gain: 0.03, when: 0.46, type: 'sine' });
+  }
+
+  function playBlocked() {
+    tone(88, 0.09, { type: 'square', gain: 0.022, to: 60 });
+  }
+
+  function playClick() {
+    tone(520, 0.05, { type: 'sine', gain: 0.025 });
+  }
+
+  function updateSoundButton() {
+    soundBtn.classList.toggle('sound-off', !soundOn);
+    soundBtn.setAttribute('aria-label', soundOn ? 'Вимкнути звук' : 'Увімкнути звук');
+    soundBtn.title = soundOn ? 'Звук увімкнено' : 'Звук вимкнено';
+  }
+
+  /* ============================================================
+     Допоміжне
+     ============================================================ */
+
+  function formatTime(seconds) {
+    seconds = Math.max(0, Math.floor(seconds || 0));
+    var m = Math.floor(seconds / 60);
+    var s = seconds % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function clamp(n, min, max) {
+    return Math.min(max, Math.max(min, n));
+  }
+
+  function later(fn, ms) {
+    var id = setTimeout(function () {
+      var i = pendingTimers.indexOf(id);
+      if (i !== -1) pendingTimers.splice(i, 1);
+      fn();
+    }, Math.max(0, ms));
+    pendingTimers.push(id);
+    return id;
+  }
+
+  function clearPendingTimers() {
+    pendingTimers.forEach(function (id) { clearTimeout(id); });
+    pendingTimers = [];
+  }
+
+  function fullMask() {
+    return (1 << level.gems.length) - 1;
+  }
+
+  function countCollected() {
+    var n = 0;
+    var m = mask;
+    while (m) { n += m & 1; m >>= 1; }
+    return n;
+  }
+
+  function difficultyFor(index) {
+    var ratio = index / TOTAL;
+    if (ratio < 0.25) return 'легкий';
+    if (ratio < 0.55) return 'середній';
+    return 'складний';
+  }
+
+  function announce(text) {
+    liveEl.textContent = '';
+    setTimeout(function () { liveEl.textContent = text; }, 20);
+  }
+
+  function showToast(text) {
+    toastEl.textContent = text;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove('show');
+    }, 2600);
+  }
+
+  function scrollToBoard() {
+    var stage = document.querySelector('.stage');
+    if (!stage) return;
+    stage.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+  }
+
+  function setHash(index) {
+    try {
+      var hash = '#' + (index + 1);
+      if (window.location.hash !== hash) {
+        window.history.replaceState(null, '', hash);
+      }
+    } catch (err) {
+      /* file:// у деяких браузерах — не критично */
+    }
+  }
+
+  function indexFromHash() {
+    var match = /^#(\d{1,2})$/.exec(window.location.hash || '');
+    if (!match) return null;
+    var n = parseInt(match[1], 10) - 1;
+    return n >= 0 && n < TOTAL ? n : null;
+  }
+
+  /* ============================================================
+     Таймер
+     ============================================================ */
+
+  function startTimer() {
+    if (timerId !== null || won) return;
+    timerStartedAt = performance.now() - elapsed * 1000;
+    timerId = setInterval(function () {
+      elapsed = Math.floor((performance.now() - timerStartedAt) / 1000);
+      timeEl.textContent = formatTime(elapsed);
+    }, 250);
+  }
+
+  function stopTimer() {
+    if (timerId !== null) {
+      clearInterval(timerId);
+      timerId = null;
+    }
+  }
+
+  function currentElapsed() {
+    if (timerId !== null) {
+      return Math.floor((performance.now() - timerStartedAt) / 1000);
+    }
+    return elapsed;
+  }
+
+  /* ============================================================
+     Рендер поля
+     ============================================================ */
+
+  function renderBoard() {
+    boardEl.textContent = '';
+    boardEl.style.setProperty('--cols', level.w);
+    boardEl.style.setProperty('--rows', level.h);
+    boardEl.setAttribute('aria-label', 'Лабіринт ' + level.w + ' на ' + level.h + '. Керуйте Котигорошком стрілками.');
+
+    cellEls = new Array(level.w * level.h);
+    gemEls = new Array(level.gems.length);
+    gemIndexByCell = new Map();
+
+    level.gems.forEach(function (cellIndex, gemIndex) {
+      gemIndexByCell.set(cellIndex, gemIndex);
+    });
+
+    var frag = document.createDocumentFragment();
+
+    for (var r = 0; r < level.h; r++) {
+      for (var c = 0; c < level.w; c++) {
+        var idx = r * level.w + c;
+        var cell = document.createElement('div');
+        cell.className = 'cell' + (level.grid[r][c] ? ' wall' : '');
+        cell.dataset.index = idx;
+
+        var tile = document.createElement('span');
+        tile.className = 'tile';
+
+        var gemIndex = gemIndexByCell.get(idx);
+        if (gemIndex !== undefined) {
+          var gem = document.createElement('span');
+          gem.className = 'gem';
+          gem.setAttribute('aria-hidden', 'true');
+          tile.appendChild(gem);
+          gemEls[gemIndex] = gem;
+        }
+
+        cell.appendChild(tile);
+        frag.appendChild(cell);
+        cellEls[idx] = cell;
+      }
+    }
+
+    boardEl.appendChild(frag);
+
+    ballEl = document.createElement('div');
+    ballEl.className = 'ball';
+    ballEl.setAttribute('aria-hidden', 'true');
+    ballEl.innerHTML =
+      '<svg class="ball-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false">' +
+        '<circle cx="50" cy="50" r="45" fill="url(#smileyBody)"/>' +
+        '<circle cx="50" cy="50" r="45" fill="url(#smileyRim)"/>' +
+        '<ellipse cx="33" cy="27" rx="17" ry="11.5" transform="rotate(-28 33 27)" fill="url(#smileySpec)"/>' +
+        '<g class="smiley-eyes">' +
+          '<ellipse cx="35.5" cy="44.5" rx="8.7" ry="10.4" fill="url(#smileyEye)"/>' +
+          '<ellipse cx="64.5" cy="44.5" rx="8.7" ry="10.4" fill="url(#smileyEye)"/>' +
+          '<circle cx="37" cy="46.5" r="5.3" fill="#4a2103"/>' +
+          '<circle cx="63" cy="46.5" r="5.3" fill="#4a2103"/>' +
+          '<circle cx="38.7" cy="44" r="1.9" fill="#ffffff"/>' +
+          '<circle cx="64.7" cy="44" r="1.9" fill="#ffffff"/>' +
+        '</g>' +
+        '<ellipse cx="34.5" cy="57.5" rx="6" ry="3.2" fill="#ff8a3d" opacity=".45"/>' +
+        '<ellipse cx="65.5" cy="57.5" rx="6" ry="3.2" fill="#ff8a3d" opacity=".45"/>' +
+        '<path d="M30 60.5Q50 81 70 60.5Q50 69.5 30 60.5Z" fill="url(#smileyMouth)"/>' +
+        '<ellipse cx="50" cy="69.5" rx="7.6" ry="3.8" fill="#ff7b6e" clip-path="url(#smileyMouthClip)"/>' +
+        '<path d="M33.5 62.4Q50 68.4 66.5 62.4" fill="none" stroke="#ffd9a8" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>' +
+      '</svg>';
+    boardEl.appendChild(ballEl);
+
+    setBallPosition(pos, 0);
+
+    boardEl.classList.remove('enter');
+    void boardEl.offsetWidth;
+    boardEl.classList.add('enter');
+  }
+
+  function setBallPosition(cellIndex, duration) {
+    if (!ballEl) return;
+    ballEl.style.setProperty('--roll', (REDUCED ? 0 : duration) + 'ms');
+    ballEl.style.setProperty('--r', Math.floor(cellIndex / level.w));
+    ballEl.style.setProperty('--c', cellIndex % level.w);
+  }
+
+  function addTrail(path) {
+    for (var i = 0; i < path.length; i++) {
+      var cell = cellEls[path[i]];
+      if (!cell || cell.classList.contains('wall')) continue;
+      cell.classList.remove('trail');
+      void cell.offsetWidth;
+      cell.style.setProperty('--trail-delay', (i * 42) + 'ms');
+      cell.classList.add('trail');
+    }
+  }
+
+  function clearTrails() {
+    for (var i = 0; i < cellEls.length; i++) {
+      if (cellEls[i]) cellEls[i].classList.remove('trail', 'collecting');
+    }
+  }
+
+  /* ============================================================
+     HUD
+     ============================================================ */
+
+  function updateHud() {
+    if (!level) return;
+    levelNumEl.textContent = levelIndex + 1;
+    levelTotalEl.textContent = TOTAL;
+    levelNameEl.textContent = level.name;
+    difficultyEl.textContent = difficultyFor(levelIndex);
+
+    var collected = countCollected();
+    gemCountEl.textContent = collected + ' / ' + level.gems.length;
+
+    gemDotsEl.textContent = '';
+    for (var i = 0; i < level.gems.length; i++) {
+      var dot = document.createElement('span');
+      dot.className = 'gem-dot' + (i < collected ? ' filled' : '');
+      gemDotsEl.appendChild(dot);
+    }
+
+    movesEl.textContent = moveCount;
+    timeEl.textContent = formatTime(elapsed);
+    undoBtn.disabled = history.length === 0 || animating || won;
+  }
+
+  function updateGems(clearAnimations) {
+    for (var i = 0; i < gemEls.length; i++) {
+      var on = !!(mask & (1 << i));
+      if (gemEls[i]) gemEls[i].classList.toggle('collected', on);
+    }
+    if (clearAnimations) clearTrails();
+  }
+
+  function updateProgressUI() {
+    var done = progress.solved.length;
+    doneCountEl.textContent = done + ' / ' + TOTAL;
+    progressFill.style.width = ((done / TOTAL) * 100).toFixed(2) + '%';
+    progressBar.setAttribute('aria-valuemax', TOTAL);
+    progressBar.setAttribute('aria-valuenow', done);
+    progressText.textContent = 'Пройдено ' + done + ' з ' + TOTAL + ' рівнів';
+
+    levelButtons.forEach(function (btn, i) {
+      btn.classList.toggle('solved', progress.solved.indexOf(i) !== -1);
+      btn.classList.toggle('current', i === levelIndex);
+      var best = progress.best[i];
+      var label = 'Рівень ' + (i + 1) + ': ' + LEVELS[i].name;
+      if (best) {
+        label += '. Рекорд: ' + best.moves + ' ходів, ' + formatTime(best.time);
+      }
+      btn.title = label;
+      btn.setAttribute('aria-label', label);
+    });
+  }
+
+  /* ============================================================
+     Рівні
+     ============================================================ */
+
+  function buildLevelGrid() {
+    levelButtons = [];
+    levelGrid.textContent = '';
+    LEVELS.forEach(function (cfg, i) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'level-btn';
+      btn.textContent = i + 1;
+      btn.addEventListener('click', function () {
+        selectLevel(i);
+      });
+      levelGrid.appendChild(btn);
+      levelButtons.push(btn);
+    });
+  }
+
+  function loadLevel(index) {
+    index = clamp(index, 0, TOTAL - 1);
+
+    clearPendingTimers();
+    stopTimer();
+    hideWin();
+
+    levelIndex = index;
+    progress.last = index;
+    saveProgress();
+
+    level = Maze.generateLevel(index);
+    pos = level.start;
+    mask = 0;
+    moveCount = 0;
+    history = [];
+    elapsed = 0;
+    timerStartedAt = 0;
+    animating = false;
+    won = false;
+
+    renderBoard();
+    updateGems(true);
+    updateHud();
+    updateProgressUI();
+    setHash(index);
+    schedulePreload();
+  }
+
+  function selectLevel(index) {
+    if (index === levelIndex && !won) {
+      showToast('Це поточний рівень. Натисни «Спочатку», щоб почати заново.');
+      return;
+    }
+    loadLevel(index);
+    playClick();
+    if (window.innerWidth < 981) {
+      setTimeout(scrollToBoard, 60);
+    }
+  }
+
+  function schedulePreload() {
+    if (levelIndex + 1 >= TOTAL) return;
+    var next = levelIndex + 1;
+    setTimeout(function () {
+      try { Maze.generateLevel(next); } catch (err) { /* ignore */ }
+    }, 450);
+  }
+
+  /* ============================================================
+     Ходи
+     ============================================================ */
+
+  function move(dir) {
+    if (!level || animating || won) return;
+
+    var options = level.moves[pos];
+    var chosen = null;
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].dir === dir) { chosen = options[i]; break; }
+    }
+
+    if (!chosen) {
+      bump(dir);
+      playBlocked();
+      return;
+    }
+
+    startTimer();
+    history.push({ pos: pos, mask: mask, moves: moveCount });
+
+    var duration = REDUCED ? 0 : Math.min(130 + (chosen.path.length - 1) * 82, 950);
+    animating = true;
+    pos = chosen.to;
+    moveCount++;
+    setBallPosition(pos, duration);
+    addTrail(chosen.path);
+    updateHud();
+    playRoll(chosen.path.length - 1);
+
+    var path = chosen.path;
+    var pathLength = Math.max(1, path.length - 1);
+
+    for (var p = 0; p < path.length; p++) {
+      (function (pathIndex) {
+        var gemIndex = gemIndexByCell.get(path[pathIndex]);
+        if (gemIndex === undefined) return;
+        if (mask & (1 << gemIndex)) return;
+
+        var at = duration * (pathIndex / pathLength);
+        later(function () {
+          if (mask & (1 << gemIndex)) return;
+          mask |= (1 << gemIndex);
+          collectGem(gemIndex);
+          updateHud();
+        }, Math.max(20, at));
+      })(p);
+    }
+
+    later(function () {
+      animating = false;
+      updateHud();
+      if (mask === fullMask() && !won) {
+        finishLevel();
+      }
+    }, duration + 45);
+  }
+
+  function bump(dir) {
+    if (!ballEl) return;
+    var cls = ['bump-up', 'bump-down', 'bump-left', 'bump-right'][dir];
+    ballEl.classList.remove('bump-up', 'bump-down', 'bump-left', 'bump-right');
+    void ballEl.offsetWidth;
+    ballEl.classList.add(cls);
+    setTimeout(function () { ballEl.classList.remove(cls); }, 260);
+  }
+
+  function collectGem(gemIndex) {
+    var gem = gemEls[gemIndex];
+    if (!gem) return;
+    gem.classList.add('collected');
+    var cell = gem.closest('.cell');
+    if (cell) {
+      cell.classList.add('collecting');
+      later(function () { cell.classList.remove('collecting'); }, 540);
+    }
+    playGem();
+    var left = level.gems.length - countCollected();
+    announce(left > 0
+      ? 'Скарб зібрано. Залишилося ' + left + '.'
+      : 'Усі скарби зібрано!');
+  }
+
+  function undo() {
+    if (!level || animating || won || history.length === 0) return;
+
+    var prev = history.pop();
+    var pr = Math.floor(pos / level.w);
+    var pc = pos % level.w;
+    var nr = Math.floor(prev.pos / level.w);
+    var nc = prev.pos % level.w;
+    var distance = Math.abs(pr - nr) + Math.abs(pc - nc);
+    var duration = REDUCED ? 0 : Math.min(130 + distance * 82, 950);
+
+    animating = true;
+    pos = prev.pos;
+    mask = prev.mask;
+    moveCount = prev.moves;
+
+    setBallPosition(pos, duration);
+    updateGems(true);
+    updateHud();
+    playRoll(distance);
+
+    later(function () {
+      animating = false;
+      updateHud();
+    }, duration + 35);
+  }
+
+  function restart() {
+    if (!level) return;
+
+    clearPendingTimers();
+    stopTimer();
+    hideWin();
+
+    pos = level.start;
+    mask = 0;
+    moveCount = 0;
+    history = [];
+    elapsed = 0;
+    timerStartedAt = 0;
+    animating = false;
+    won = false;
+
+    setBallPosition(pos, 0);
+    updateGems(true);
+    updateHud();
+    playClick();
+  }
+
+  /* ============================================================
+     Завершення рівня
+     ============================================================ */
+
+  function finishLevel() {
+    if (won) return;
+    won = true;
+    animating = false;
+    elapsed = currentElapsed();
+    stopTimer();
+
+    var seconds = Math.max(0, elapsed);
+    var prevBest = progress.best[levelIndex];
+    var isRecord = !prevBest
+      || moveCount < prevBest.moves
+      || (moveCount === prevBest.moves && seconds < prevBest.time);
+
+    if (isRecord) {
+      progress.best[levelIndex] = { moves: moveCount, time: seconds };
+    }
+    if (progress.solved.indexOf(levelIndex) === -1) {
+      progress.solved.push(levelIndex);
+    }
+    progress.last = levelIndex;
+    saveProgress();
+
+    updateHud();
+    updateProgressUI();
+    playWin();
+    showWin(isRecord, seconds);
+  }
+
+  function showWin(isRecord, seconds) {
+    var allDone = progress.solved.length === TOTAL;
+
+    winKicker.textContent = allDone ? 'Усі рівні пройдено' : 'Рівень ' + (levelIndex + 1) + ' пройдено';
+    if (allDone) {
+      winTitle.textContent = 'Усі скарби зібрано!';
+    } else if (isRecord) {
+      winTitle.textContent = 'Новий рекорд!';
+    } else {
+      winTitle.textContent = 'Чудова робота!';
+    }
+
+    winMoves.textContent = moveCount;
+    winTime.textContent = formatTime(seconds);
+    winBest.textContent = level.solution;
+
+    if (levelIndex >= TOTAL - 1) {
+      nextBtn.innerHTML = 'До мапи рівнів';
+    } else {
+      nextBtn.innerHTML = 'Наступний рівень <span aria-hidden="true">→</span>';
+    }
+
+    winLayer.hidden = false;
+    spawnConfetti();
+    setTimeout(function () { nextBtn.focus(); }, 80);
+    announce('Рівень пройдено. Ходів: ' + moveCount + '. Час: ' + formatTime(seconds) + '.');
+  }
+
+  function hideWin() {
+    winLayer.hidden = true;
+    confettiEl.textContent = '';
+  }
+
+  function spawnConfetti() {
+    confettiEl.textContent = '';
+    if (REDUCED) return;
+    var colors = ['#ffb648', '#57e6ff', '#63e6a8', '#ffffff', '#ff8a2a', '#8ea7ff'];
+    for (var i = 0; i < 54; i++) {
+      var piece = document.createElement('i');
+      piece.style.left = (Math.random() * 100).toFixed(2) + '%';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.width = (5 + Math.random() * 5).toFixed(1) + 'px';
+      piece.style.height = (8 + Math.random() * 7).toFixed(1) + 'px';
+      piece.style.setProperty('--dur', (1.6 + Math.random() * 1.5).toFixed(2) + 's');
+      piece.style.setProperty('--delay', (Math.random() * 0.35).toFixed(2) + 's');
+      piece.style.setProperty('--drift', (Math.random() * 140 - 70).toFixed(0) + 'px');
+      piece.style.setProperty('--spin', (360 + Math.random() * 720).toFixed(0) + 'deg');
+      confettiEl.appendChild(piece);
+    }
+  }
+
+  function nextLevel() {
+    if (levelIndex >= TOTAL - 1) {
+      hideWin();
+      showToast(progress.solved.length === TOTAL
+        ? 'Вітаємо! Усі ' + TOTAL + ' рівнів пройдено.'
+        : 'Це останній рівень. Спробуй покращити рекорд!');
+      if (window.innerWidth < 981) {
+        setTimeout(scrollToBoard, 60);
+      }
+      return;
+    }
+    loadLevel(levelIndex + 1);
+    playClick();
+  }
+
+  /* ============================================================
+     Модальне вікно правил
+     ============================================================ */
+
+  var helpReturnFocus = null;
+
+  function openHelp() {
+    helpReturnFocus = document.activeElement;
+    helpModal.hidden = false;
+    document.body.classList.add('no-scroll');
+    setTimeout(function () { helpClose.focus(); }, 40);
+  }
+
+  function closeHelp() {
+    helpModal.hidden = true;
+    document.body.classList.remove('no-scroll');
+    if (helpReturnFocus && typeof helpReturnFocus.focus === 'function') {
+      helpReturnFocus.focus();
+    }
+  }
+
+  /* ============================================================
+     Скидання прогресу
+     ============================================================ */
+
+  function disarmReset() {
+    resetArmed = false;
+    resetProgressBtn.classList.remove('armed');
+    resetProgressBtn.textContent = 'Скинути прогрес';
+    clearTimeout(resetArmTimer);
+  }
+
+  function handleResetClick() {
+    if (!resetArmed) {
+      resetArmed = true;
+      resetProgressBtn.classList.add('armed');
+      resetProgressBtn.textContent = 'Справді скинути?';
+      showToast('Натисни ще раз, щоб скинути весь прогрес');
+      clearTimeout(resetArmTimer);
+      resetArmTimer = setTimeout(disarmReset, 3800);
+      return;
+    }
+
+    disarmReset();
+    progress = defaultProgress();
+    progress.last = levelIndex;
+    progress.sound = soundOn;
+    saveProgress();
+    updateProgressUI();
+    loadLevel(levelIndex);
+    showToast('Прогрес скинуто');
+  }
+
+  /* ============================================================
+     Події
+     ============================================================ */
+
+  function bindEvents() {
+    var padButtons = document.querySelectorAll('.pad-btn');
+    padButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        move(parseInt(btn.dataset.dir, 10));
+      });
+    });
+
+    undoBtn.addEventListener('click', undo);
+    restartBtn.addEventListener('click', restart);
+
+    nextBtn.addEventListener('click', nextLevel);
+    againBtn.addEventListener('click', function () {
+      loadLevel(levelIndex);
+      playClick();
+    });
+    winClose.addEventListener('click', function () {
+      hideWin();
+      showToast('Обери наступний рівень на мапі або натисни «Ще раз».');
+    });
+
+    soundBtn.addEventListener('click', function () {
+      soundOn = !soundOn;
+      progress.sound = soundOn;
+      saveProgress();
+      updateSoundButton();
+      if (soundOn) playClick();
+    });
+
+    fullscreenBtn.addEventListener('click', function () {
+      try {
+        if (!document.fullscreenElement) {
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+          }
+        } else if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      } catch (err) {
+        showToast('Повноекранний режим недоступний');
+      }
+    });
+
+    helpBtn.addEventListener('click', openHelp);
+    helpClose.addEventListener('click', closeHelp);
+    helpOk.addEventListener('click', closeHelp);
+    helpModal.querySelector('.modal-backdrop').addEventListener('click', closeHelp);
+
+    resetProgressBtn.addEventListener('click', handleResetClick);
+
+    /* Свайпи по полю */
+    boardEl.addEventListener('pointerdown', function (event) {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      swipeStart = { x: event.clientX, y: event.clientY };
+    });
+
+    window.addEventListener('pointerup', function (event) {
+      if (!swipeStart) return;
+      var dx = event.clientX - swipeStart.x;
+      var dy = event.clientY - swipeStart.y;
+      swipeStart = null;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        move(dx > 0 ? 3 : 2);
+      } else {
+        move(dy > 0 ? 1 : 0);
+      }
+    });
+
+    window.addEventListener('pointercancel', function () { swipeStart = null; });
+
+    /* Клавіатура */
+    document.addEventListener('keydown', function (event) {
+      if (!helpModal.hidden) {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          closeHelp();
+        } else if (event.key === 'Tab') {
+          trapFocus(event, helpModal);
+        }
+        return;
+      }
+
+      if (!winLayer.hidden) {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          hideWin();
+        } else if (event.key === 'Enter') {
+          event.preventDefault();
+          nextLevel();
+        }
+        return;
+      }
+
+      var target = event.target;
+      if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return;
+
+      var arrows = { ArrowUp: 0, ArrowDown: 1, ArrowLeft: 2, ArrowRight: 3 };
+      if (arrows[event.key] !== undefined) {
+        event.preventDefault();
+        move(arrows[event.key]);
+        return;
+      }
+
+      switch (event.code) {
+        case 'KeyW': move(0); break;
+        case 'KeyS': move(1); break;
+        case 'KeyA': move(2); break;
+        case 'KeyD': move(3); break;
+        case 'KeyZ':
+        case 'Backspace':
+          event.preventDefault();
+          undo();
+          break;
+        case 'KeyR':
+          restart();
+          break;
+      }
+    });
+
+    /* Зміна hash (наприклад, кнопки «назад/вперед») */
+    window.addEventListener('hashchange', function () {
+      var fromHash = indexFromHash();
+      if (fromHash !== null && fromHash !== levelIndex) {
+        loadLevel(fromHash);
+      }
+    });
+  }
+
+  function trapFocus(event, container) {
+    var focusable = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (!focusable.length) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  /* ============================================================
+     Старт
+     ============================================================ */
+
+  function init() {
+    if (!document.documentElement.requestFullscreen) {
+      fullscreenBtn.hidden = true;
+    }
+
+    updateSoundButton();
+    buildLevelGrid();
+    bindEvents();
+
+    var fromHash = indexFromHash();
+    var start = fromHash !== null ? fromHash : progress.last;
+    loadLevel(start);
+  }
+
+  init();
+})();
+
+  </script>
+</body>
+</html>
