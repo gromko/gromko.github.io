@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#050810">
+  <meta name="description" content="Кришталія — сокобан з анімованим героєм. Заштовхай усі кристали до окремого сховища на рунічні підставки.">
+  <title>Кришталія — сокобан</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23c9fbff'/%3E%3Cstop offset='.55' stop-color='%2340d9ff'/%3E%3Cstop offset='1' stop-color='%232a54ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%23070b16'/%3E%3Cpath d='M32 8 51 25 43 50 32 57 21 50 13 25Z' fill='url(%23g)'/%3E%3Cpath d='M32 8 51 25 32 34 13 25Z' fill='%23e8ffff' opacity='.55'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true" focusable="false" width="0" height="0">
+    <defs>
+      <symbol id="i-crystal" viewBox="0 0 24 24"><path d="M12 2.5 20 9l-3.2 9.4L12 22l-4.8-3.6L4 9Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m12 2.5 5 7.2-5 3.5-5-3.5ZM7 9.7h10M12 13.2V22" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" opacity=".8"/></symbol>
+      <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 7 4 12l5 5M4 12h8a6 6 0 0 1 6 6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-restart" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10H4Z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10H4Z" fill="currentColor"/><path d="m16 9 5 6m0-6-5 6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+      <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.6 9.2a2.5 2.5 0 1 1 3.9 2.1c-.9.6-1.5 1.1-1.5 2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17" r="1.1" fill="currentColor"/></symbol>
+      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.2 4.2L19 6.8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10M12 14v2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+      <symbol id="i-steps" viewBox="0 0 24 24"><path d="M8.2 4.2c1.6 0 2.5 1.4 2.5 3.2 0 1.7-.8 3.1-2.5 3.1S5.7 9.1 5.7 7.4c0-1.8.9-3.2 2.5-3.2Zm7.6 8.1c1.6 0 2.5 1.4 2.5 3.2 0 1.7-.8 3.1-2.5 3.1s-2.5-1.4-2.5-3.1c0-1.8.9-3.2 2.5-3.2Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 11.2c-.5 1.1-.7 2.4-.7 3.6 0 1.4.4 2.3 1.6 2.3M14.1 6.7c.5-1.1.7-2.4.7-3.6 0-1.4-.4-2.3-1.6-2.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".55"/></symbol>
+      <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 5H5v2a3 3 0 0 0 3 3m8-5h3v2a3 3 0 0 1-3 3M12 12v4m-4 4h8m-6-4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5-11-6.5Z" fill="currentColor"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3c.6 4.6 2.4 6.4 7 7-4.6.6-6.4 2.4-7 7-.6-4.6-2.4-6.4-7-7 4.6-.6 6.4-2.4 7-7Z" fill="currentColor"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="ambient" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+    <span class="grain"></span>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg><use href="#i-crystal"></use></svg>
+        </span>
+        <div class="brand-copy">
+          <h1>Кришталія</h1>
+          <p>сокобан · сховище кристалів</p>
+        </div>
+      </div>
+
+      <div class="level-pill" aria-live="polite">
+        <span class="level-pill-label">Рівень</span>
+        <span class="level-pill-num" id="levelNumber">01</span>
+        <span class="level-pill-total">/ 10</span>
+        <span class="level-pill-name" id="levelName">Перший крок</span>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-btn" id="soundBtn" type="button" aria-label="Вимкнути звук" aria-pressed="true" title="Звук (M)">
+          <svg><use href="#i-sound"></use></svg>
+        </button>
+        <button class="icon-btn" id="helpBtn" type="button" aria-label="Як грати" title="Як грати (H)">
+          <svg><use href="#i-help"></use></svg>
+        </button>
+        <button class="btn btn-gold" id="levelsBtn" type="button" title="Рівні (L)">
+          <svg class="btn-icon"><use href="#i-grid"></use></svg>
+          <span>Рівні</span>
+          <span class="kbd">L</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="stage-panel" aria-label="Ігрове поле">
+        <div class="stage-top">
+          <div class="stage-heading">
+            <span class="live-dot" aria-hidden="true"></span>
+            <span>Сховище</span>
+            <span class="stage-heading-sub" id="stageRoomLabel">зала 01</span>
+          </div>
+          <div class="stage-badges">
+            <span class="chip"><svg><use href="#i-clock"></use></svg><span id="timeText">00:00</span></span>
+            <span class="chip"><svg><use href="#i-steps"></use></svg><span id="movesText">0</span> кроків</span>
+          </div>
+        </div>
+
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="board" aria-label="Поле сокобану. Керуйте героєм стрілками або WASD."></canvas>
+          <div class="canvas-vignette" aria-hidden="true"></div>
+        </div>
+
+        <div class="stage-bottom">
+          <div class="goal-progress">
+            <div class="goal-progress-row">
+              <span>Кристали у сховищі</span>
+              <strong id="placedText">0 / 0</strong>
+            </div>
+            <div class="progress-track"><span id="placedBar"></span></div>
+          </div>
+          <div class="stage-buttons">
+            <button class="btn btn-ghost" id="undoBtn" type="button" title="Крок назад (Z)">
+              <svg class="btn-icon"><use href="#i-undo"></use></svg>
+              <span>Назад</span>
+              <span class="kbd">Z</span>
+            </button>
+            <button class="btn btn-ghost" id="restartBtn" type="button" title="Почати спочатку (R)">
+              <svg class="btn-icon"><use href="#i-restart"></use></svg>
+              <span>Спочатку</span>
+              <span class="kbd">R</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="mission-card">
+          <span class="eyebrow"><svg><use href="#i-spark"></use></svg> Місія</span>
+          <h2>Заштовхай кристали до сховища</h2>
+          <p>Кристали мигають, доки лежать не на своїх місцях у сховищі. Кожен кристал можна тільки штовхати — тягнути не можна.</p>
+          <div class="mission-stats">
+            <div>
+              <span>У сховищі</span>
+              <strong id="crystalsText">0 / 0</strong>
+            </div>
+            <div>
+              <span>Поштовхи</span>
+              <strong id="pushesText">0</strong>
+            </div>
+            <div>
+              <span>Рекорд</span>
+              <strong id="bestText">—</strong>
+            </div>
+          </div>
+          <div class="mission-par" id="parNote">Мінімум: 3 поштовхи</div>
+        </div>
+
+
+        <div class="controls-card">
+          <span class="eyebrow">Керування</span>
+          <div class="key-row">
+            <span class="key-group"><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd></span>
+            <span>рух</span>
+          </div>
+          <div class="key-row">
+            <span class="key-group"><kbd>Z</kbd></span><span>крок назад</span>
+            <span class="key-group"><kbd>R</kbd></span><span>спочатку</span>
+          </div>
+          <p class="touch-hint">На телефоні — свайп по полю або кнопки внизу.</p>
+        </div>
+      </aside>
+    </main>
+
+    <div class="dpad" id="dpad" aria-label="Сенсорне керування">
+      <button class="dpad-btn dpad-up" type="button" data-dir="up" aria-label="Вгору"><svg><use href="#i-arrow-up"></use></svg></button>
+      <button class="dpad-btn dpad-left" type="button" data-dir="left" aria-label="Вліво"><svg><use href="#i-arrow-left"></use></svg></button>
+      <button class="dpad-btn dpad-down" type="button" data-dir="down" aria-label="Вниз"><svg><use href="#i-arrow-down"></use></svg></button>
+      <button class="dpad-btn dpad-right" type="button" data-dir="right" aria-label="Вправо"><svg><use href="#i-arrow-right"></use></svg></button>
+      <span class="dpad-center" aria-hidden="true"><svg><use href="#i-crystal"></use></svg></span>
+    </div>
+
+    <footer class="footer">
+      <span><svg><use href="#i-crystal"></use></svg> Кришталія</span>
+      <span>10 рівнів · без залежностей</span>
+    </footer>
+  </div>
+
+  <div class="modal" id="levelsModal" role="dialog" aria-modal="true" aria-labelledby="levelsTitle" hidden>
+    <div class="modal-card modal-card-wide">
+      <button class="modal-close" type="button" data-close aria-label="Закрити"><svg><use href="#i-close"></use></svg></button>
+      <span class="eyebrow">Мапа сховищ</span>
+      <h2 id="levelsTitle">Обери рівень</h2>
+      <p class="modal-sub">Кожна перемога відкриває наступну залу. Рекорд — найменша кількість кроків.</p>
+      <div class="levels-grid" id="levelsGrid"></div>
+      <div class="modal-note"><svg><use href="#i-lock"></use></svg> Нові рівні відкриваються після перемоги</div>
+    </div>
+  </div>
+
+  <div class="modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+    <div class="modal-card">
+      <button class="modal-close" type="button" data-close aria-label="Закрити"><svg><use href="#i-close"></use></svg></button>
+      <span class="eyebrow">Правила</span>
+      <h2 id="helpTitle">Як грати</h2>
+      <div class="help-steps">
+        <div class="help-step">
+          <span class="help-num">1</span>
+          <div><h3>Іди до кристала</h3><p>Керуй героєм стрілками, WASD, свайпом або кнопками. Він анімовано крокує полем.</p></div>
+        </div>
+        <div class="help-step">
+          <span class="help-num">2</span>
+          <div><h3>Штовхай перед собою</h3><p>Стань позаду кристала й іди вперед — герой упреться руками та покотить кристал.</p></div>
+        </div>
+        <div class="help-step">
+          <span class="help-num">3</span>
+          <div><h3>Заповни сховище</h3><p>Кристал перестає мигати, коли лягає на рунічну підставку в окремому приміщенні. Заповни всі — і рівень пройдено.</p></div>
+        </div>
+      </div>
+      <div class="help-keys">
+        <div><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd><span>рух</span></div>
+        <div><kbd>Z</kbd><span>крок назад</span></div>
+        <div><kbd>R</kbd><span>спочатку</span></div>
+        <div><kbd>M</kbd><span>звук</span></div>
+        <div><kbd>L</kbd><span>рівні</span></div>
+        <div><kbd>Esc</kbd><span>закрити</span></div>
+      </div>
+      <button class="btn btn-gold btn-full" type="button" data-close>Зрозуміло</button>
+    </div>
+  </div>
+
+  <div class="modal" id="winModal" role="dialog" aria-modal="true" aria-labelledby="winTitle" hidden>
+    <div class="modal-card modal-card-win">
+      <div class="win-burst" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+      <span class="eyebrow">Сховище заповнено</span>
+      <h2 id="winTitle">Рівень пройдено!</h2>
+      <div class="win-stats">
+        <div><span>Кроки</span><strong id="winMoves">0</strong></div>
+        <div><span>Поштовхи</span><strong id="winPushes">0</strong></div>
+        <div><span>Час</span><strong id="winTime">00:00</strong></div>
+      </div>
+      <div class="record-badge" id="recordBadge" hidden><svg><use href="#i-trophy"></use></svg> Новий рекорд рівня!</div>
+      <div class="win-actions">
+        <button class="btn btn-gold" id="nextLevelBtn" type="button"><span>Наступний рівень</span><svg class="btn-icon"><use href="#i-chevron"></use></svg></button>
+        <button class="btn btn-ghost" id="replayBtn" type="button"><svg class="btn-icon"><use href="#i-restart"></use></svg><span>Ще раз</span></button>
+        <button class="btn btn-ghost" id="winLevelsBtn" type="button"><svg class="btn-icon"><use href="#i-grid"></use></svg><span>До рівнів</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="finalModal" role="dialog" aria-modal="true" aria-labelledby="finalTitle" hidden>
+    <div class="modal-card modal-card-win">
+      <div class="win-burst win-burst-gold" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+      <span class="eyebrow">Усі десять зал</span>
+      <h2 id="finalTitle">Сховище сяє!</h2>
+      <p class="modal-sub">Ти зібрав усі кристали королівства. Тепер жоден із них не блимає — усе на своїх місцях.</p>
+      <div class="win-stats">
+        <div><span>Рівнів</span><strong>10 / 10</strong></div>
+        <div><span>Рекордів</span><strong id="finalRecords">0</strong></div>
+        <div><span>Сума рекордів</span><strong id="finalTime">—</strong></div>
+      </div>
+      <div class="win-actions">
+        <button class="btn btn-gold" id="finalReplayBtn" type="button"><svg class="btn-icon"><use href="#i-play"></use></svg><span>Грати знову</span></button>
+        <button class="btn btn-ghost" id="finalLevelsBtn" type="button"><svg class="btn-icon"><use href="#i-grid"></use></svg><span>До рівнів</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="levels.js?v=3"></script>
+  <script src="game.js?v=3"></script>
+</body>
+</html>
